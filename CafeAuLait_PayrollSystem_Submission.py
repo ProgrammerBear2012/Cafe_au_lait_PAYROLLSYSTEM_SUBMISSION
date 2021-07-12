@@ -10,27 +10,12 @@
 import os
 import os.path
 import csv
+import time
 
 
 # ======================================================================================================================
 #                                                 TO-BE COMPLETED FUNCTIONS                                            #
 # ======================================================================================================================
-
-def TimeCalculator(ClockInTime, ClockOutTime):
-    print("TBA")
-
-
-def TimeChecker(time):
-    print("TBA")
-
-
-def FindEmployee(EmployeeID, Password):
-    print("TBA")
-
-
-def FindCurrentEmployee(EmployeeID):
-    print("TBA")
-
 
 def RandomGenerateEmployeeID():
     print("TBA")
@@ -264,9 +249,55 @@ def readCSVto2DArray(filename):
     return myRecord_Array
 # end def
 
+def FindCurrentEmployee(EmployeeID, array):
+    arrayCounter = 0
+    for employees in array:
+        if employees[0] != EmployeeID:
+            arrayCounter = arrayCounter + 1
+        else:
+            return arrayCounter
+        # end if
+    return False
+    # end for
+# end def
+
+def TimeCalculator(ClockInTime, ClockOutTime):
+    outputTime = int(ClockOutTime) - int(ClockInTime)
+    if outputTime < 0:
+        return False
+    else:
+        outputTime = outputTime / 100
+        return outputTime
+# end def
+
+def TimeChecker(time):
+    if int(time) == False:
+        return False
+    elif int(time) > 2400:
+        return False
+    elif int(time) < 0:
+        return False
+    elif int(str(time[2] + time[3])) > 60:
+        return False
+    else:
+        return True
+    # end if
+# end def
+
 # ======================================================================================================================
 #                                                 DEBUGGING FUNCTIONS                                                  #
 # ======================================================================================================================
+
+def isSameString(stringA, stringB):
+    pos = 0
+    for character in stringA:
+        if character.lower() != stringB[pos].lower():
+            return False
+        pos = pos + 1
+        # end if
+    # end for
+    return True
+# end def
 
 # ======================================================================================================================
 #                                                   DISPLAY FUNCTIONS                                                  #
@@ -283,7 +314,6 @@ def Header(SystemHeader, HeaderMessage):
 def Footer():
     SelectedNavigation = ''
     Breakout = False
-    Confirmation = False
     print("----------------------------------------------------------------------------------------")
     print("| [R]eturn")
     print("| [C]onfirm")
@@ -291,15 +321,13 @@ def Footer():
     while Breakout == False:
         SelectedNavigation = input("::")
         if SelectedNavigation.lower() == 'r':
-            Breakout = True
+            return False
         elif SelectedNavigation.lower() == 'c':
-            Confirmation = True
-            Breakout = True
+            return True
         elif SelectedNavigation.lower() != 'c' and SelectedNavigation.lower() != 'r':
             print("Please select a valid option")
         # end if
     # end while
-    return Confirmation
 # end module
 
 def Display_Navigation():
@@ -315,7 +343,6 @@ def Display_Navigation():
 
 
 def Display_InteractiveLogin(array):
-    login = False
     EmployeeID = ''
     Password = ''
     Header("Interactive: Log-in", "Interactive mode selected")
@@ -328,137 +355,177 @@ def Display_InteractiveLogin(array):
         EmployeeID = str(EmployeeID)
         Password = str(Password)
         for employees in array:
-            print("Actual Employee:" + employees[0])
-            print("Actual Password:" + employees[3])
-            print("Inputted EmployeeID:" + EmployeeID)
-            print("Inputted Password:" + Password)
             if employees[0] == EmployeeID and employees[3] == Password:
                 return EmployeeID
             # end if
         # end for
-        return login
+        return False
     # end if
 # end def
 
 
 
-def Display_InteractiveMode(EmployeeID, EmployeeArray):
-    TimeStamp = 0000
-    DaySelection = ""
+def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
+    timeStamp = 0000
+    timeStampValidation = False
+    daySelection = ""
+    daySelectionValidation = False
     clockSelection = ""
-    Confirmation = 0
+    clockSelectionValidation = False
     HoursWorked = 0
-    EmployeeName = EmployeeArray[1]
-    EmployeeWelcome = "Welcome Employee" + EmployeeName
-    Header("Interactive: Employee", EmployeeName)
-    print(" | ")
-    clockSelection = input(" | Clock - [I]n / [O]ut(default)")
-    print(" | ")
-    print(" | // input the day using the designated 3 letter shortened word")
-    print(" | ")
-    print(" | [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
-    DaySelection = input("Day:")
-    # Repeat loop here
-    if DaySelection != 'MON' and DaySelection != 'TUE' and DaySelection != 'WED' and DaySelection != 'THU' and DaySelection != 'FRI' and DaySelection != 'SAT' and DaySelection != 'SUN':
-        print(" ")
-        print("ERROR: Please enter a valid day")
+    employeeFirstName = LoginArray[int(EmployeeID)][1]
+    employeeLastName = LoginArray[int(EmployeeID)][2]
+    EmployeeWelcome = "Welcome Employee: " + employeeFirstName + " " + employeeLastName
+    Header("Interactive: Employee", EmployeeWelcome)
+    print("| ")
+    clockSelection = input("| Clock - [I]n / [O]ut(default)")
+    if clockSelection.lower() != 'i':
+        clockSelectionValidation = 'o'
+    # end if
+    print("| ")
+    print("| ")
+    print("| // input the day using the designated 3 letter shortened word")
+    print("| ")
+    print("| [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
+    while daySelectionValidation == False:
+        daySelection = input("| Day:")
+        if daySelection.lower() != 'mon' and daySelection.lower() != 'tue' and daySelection.lower() != 'wed' and \
+                daySelection.lower() != 'thu' and daySelection.lower() != 'fri' and\
+                daySelection.lower() != 'sat' and daySelection.lower() != 'sun':
+            print(" ")
+            print("ERROR: Please enter a valid day")
+        else:
+            if clockSelection.lower() == 'o':
+                dayString = str((EmployeeArray[5][0] + EmployeeArray[5][1] + EmployeeArray[5][2])).lower()
+                print(isSameString(daySelection, dayString))
+                if daySelection.lower() == dayString:
+                    daySelectionValidation = True
+                else:
+                    print("ERROR: MUST CLOCK OUT ON SAME DAY")
+                # end if
+            else:
+                daySelectionValidation = True
+            # end if
+        # end if
+    # end while
+    print("| ")
+    print("| ")
+    print("| // input time using the time code hhmm e.g. 11:00am is 1100")
+    print("| ")
+    while timeStampValidation == False:
+        timeStamp = input("| Time:")
+        TimeChecker(timeStamp)
+        if TimeChecker(timeStamp) == True:
+            if clockSelection.lower() == 'o':
+                if TimeCalculator(EmployeeArray[6], timeStamp) != False:
+                    timeStampValidation = True
+                else:
+                    print("ERROR: Please enter a valid time")
+                    # end if
+            else:
+                timeStampValidation = True
+            # end if
+        else:
+            print("")
+            print("ERROR: Please enter valid time")
+        # end if
+    # end while
+    if Footer() == True:
+        if clockSelection.lower() == 'i':
+            EmployeeArray[4] = True
+            EmployeeArray[6] = timeStamp
+            if daySelection.lower() == 'mon':
+                EmployeeArray[5] = 'MONDAY'
+            elif daySelection.lower() == 'tue':
+                EmployeeArray[5] = 'TUESDAY'
+            elif daySelection.lower() == 'wed':
+                EmployeeArray[5] = 'WEDNESDAY'
+            elif daySelection.lower() == 'thu':
+                EmployeeArray[5] = 'THURSDAY'
+            elif daySelection.lower() == 'fri':
+                EmployeeArray[5] = 'FRIDAY'
+            elif daySelection.lower() == 'sat':
+                EmployeeArray[5] = 'SATURDAY'
+            elif daySelection.lower() == 'sun':
+                EmployeeArray[5] = 'SUNDAY'
+            # end if
+        else:
+            EmployeeArray[4] = False
+            EmployeeArray[7] = timeStamp
+            HoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
+            if daySelection.lower() == 'mon':
+                EmployeeArray[8] = HoursWorked
+            elif daySelection.lower() == 'tue':
+                EmployeeArray[9] = HoursWorked
+            elif daySelection.lower() == 'wed':
+                EmployeeArray[10] = HoursWorked
+            elif daySelection.lower() == 'thu':
+                EmployeeArray[11] = HoursWorked
+            elif daySelection.lower() == 'fri':
+                EmployeeArray[12] = HoursWorked
+            elif daySelection.lower() == 'sat':
+                EmployeeArray[13] = HoursWorked
+            elif daySelection.lower() == 'sun':
+                EmployeeArray[14] = HoursWorked
+            # end if
+        # end if
+        return True
+    # end if
+    return False
+# end def
+
+def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
+    employeeFirstName = LoginArray[int(EmployeeID)][1]
+    employeeLastName = LoginArray[int(EmployeeID)][2]
+    status = None
+    if CurrentEmployeeArray[4] == False:
+        status = 'Shift in progress'
     else:
-        Confirmation = 1
-    DaySelection = input("Day:")
-    # Loop condition: Until(Confirmation = 1)
-    Confirmation = 0
-    print(" | ")
-    print(" | ")
-    print(" | // input day using the time code hhmm e.g. 11:00am is 1100")
-    print(" | ")
-    TimeStamp = input("Time:")
-    # Repeat loop here
-    TimeChecker(TimeStamp)
-    if TimeChecker == 'Y' or TimeChecker == 'y':
-        Confirmation = 1
+        status = 'Not on shift'
+    Header("Interactive: Employee", "Have a good day employee: " + employeeFirstName + " " + employeeLastName)
+    print("| ")
+    print("| Status: " + status)
+    print("| ")
+    print("| Day: " + CurrentEmployeeArray[5])
+    print("| ")
+    if CurrentEmployeeArray[4] == True:
+        print("| Time:  " + CurrentEmployeeArray[6])
+        print("| ")
+        print("| Hours: Shift in progress")
+        print("| ")
+        print("-----------------------------------------------------------")
     else:
-        print("")
-        print("ERROR: Please enter valid time")
-    TimeStamp = input("Time:")
-    # Repeat condition: Until(Confirmation==1)
-    Confirmation = 0
+        print("| Time:  " + CurrentEmployeeArray[7])
+        print("| ")
+        print("| Hours:  " + TimeCalculator(CurrentEmployeeArray[6], CurrentEmployeeArray[7]))
+        print("| ")
+        print("-----------------------------------------------------------")
+
+
+def Display_ClerkOptions(EmployeeID):
+    Header("Interactive: Clerk", "Welcome Clerk" + EmployeeID)
+    print("| ")
+    print("| [P]ayment / [F]inancial / [E]mployee options(default)")
+    input(ClerkSelection)
+    print("| ")
     Footer(Display_InteractiveLogin(EmployeeFileArray))
     if Footer(Display_InteractiveLogin(EmployeeFileArray)) == 'C':
-        if clockSelection == 'I':
-            EmployeeArray[8] = "CLOCK - IN"
-            EmployeeArray[9] = TimeStamp
-            EmployeeArray[10] = "Shift in progress"
+        if ClerkSelection == P:
+            Display_ClerkPaymentOptions(EmployeeID)
+        elif ClerkSelection == F:
+            Display_ClerkFinancialOptions(EmployeeID)
         else:
-            EmployeeArray[8] = "CLOCK - OUT"
-            EmployeeArray[9] = TimeStamp
-            HoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
-        if DaySelection == 'MON':
-            EmployeeArray[12] = HoursWorked
-            EmployeeArray[11] = "MONDAY"
-        elif DaySelection == 'TUE':
-            EmployeeArray[13] = HoursWorked
-            EmployeeArray[11] = "TUESDAY"
-        elif DaySelection == 'WED':
-            EmployeeArray[14] = HoursWorked
-            EmployeeArray[11] = "WEDNESDAY"
-        elif DaySelection == 'THU':
-            EmployeeArray[15] = HoursWorked
-            EmployeeArray[11] = "THURSDAY"
-        elif DaySelection == 'FRI':
-            EmployeeArray[16] = HoursWorked
-            EmployeeArray[11] = "FRIDAY"
-        elif DaySelection == 'SAT':
-            EmployeeArray[17] = HoursWorked
-            EmployeeArray[11] = "SATURDAY"
-        elif DaySelection == 'SUN':
-            EmployeeArray[18] = HoursWorked
-            EmployeeArray[19] = "SUNDAY"
-#
-#
-# def Display_Clockinprint(EmployeeID, EmployeeFileArray, EmployeeArray):
-#     CurrentEmployee = FindCurrentEmployee(EmployeeID)
-#     Header("Interactive: Employee", "Have a good day employee" + CurrentEmployee[1])
-#     print(" | ")
-#     print(" | Status: " + CurrentEmployee[8])
-#     print(" | ")
-#     print("Day:  " + CurrentEmployee[11])
-#     print(" | ")
-#     if CurrentEmployee[Status] == "CLOCK - IN":
-#         print(" | Time:  " + CurrentEmployee[9])
-#         print(" | ")
-#         print(" | Hours: In - progress")
-#     else:
-#         print(" | Time:  " + CurrentEmployee[10])
-#         print(" | ")
-#         print(" | Hours:  " + TimeCalculator(CurrentEmployee[9], CurrentEmployee[10]))
-#         print(" | ")
-#         print("-----------------------------------------------------------")
-#
-#
-# def Display_ClerkOptions(EmployeeID):
-#     Header("Interactive: Clerk", "Welcome Clerk" + EmployeeID)
-#     print(" | ")
-#     print(" | [P]ayment / [F]inancial / [E]mployee options(default)")
-#     input(ClerkSelection)
-#     print(" | ")
-#     Footer(Display_InteractiveLogin(EmployeeFileArray))
-#     if Footer(Display_InteractiveLogin(EmployeeFileArray)) == 'C':
-#         if ClerkSelection == P:
-#             Display_ClerkPaymentOptions(EmployeeID)
-#         elif ClerkSelection == F:
-#             Display_ClerkFinancialOptions(EmployeeID)
-#         else:
-#             Display_ClerkEmployeeOptions(EmployeeID)
-#
+            Display_ClerkEmployeeOptions(EmployeeID)
+
 #
 # def Display_ClerkPaymentOptions(EmployeeFileArray, ClerkID):
 #     Header("Interactive: Clerk", "Payment")
-#     print(" | ")
-#     print(" | Enter employee ID")
-#     print(" | ")
-#     print(" | Employee - ID:")
+#     print("| ")
+#     print("| Enter employee ID")
+#     print("| ")
+#     print("| Employee - ID:")
 #     input(EmployeeID)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_ClerkOptions(ClerkID))
 #     if Footer(Display_ClerkOptions(ClerkID)) == 'C':
 #         # Repeat loop
@@ -472,10 +539,10 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #
 # def Display_ClerkEmployeeOptions(ClerkID):
 #     Header("Interactive: Clerk", "Employee Options")
-#     print(" | ")
-#     print(" | [A]dd / [R]emove / [E]dit Employee(default)")
+#     print("| ")
+#     print("| [A]dd / [R]emove / [E]dit Employee(default)")
 #     input(ClerkSelection)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_ClerkOptions(EmployeeID))
 #     if Display_ClerkOptions(EmployeeID) == 'C':
 #         if ClerkSelection == 'A':
@@ -489,25 +556,25 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 # def Display_AddEmployee(RolePaymentArray, ClerkID, EmployeeFileArray):
 #     NewEmployeeHourlyRate = 0
 #     Header("Interactive: Clerk", "Add Employee")
-#     print(" | ")
-#     print(" | Enter employee's details")
-#     print(" | ")
+#     print("| ")
+#     print("| Enter employee's details")
+#     print("| ")
 #     print("Given Name: ")
 #     input(EmployeeGivenName)
-#     print(" | ")
+#     print("| ")
 #     print("Surname: ")
 #     input(EmployeeSurname)
-#     print(" | ")
+#     print("| ")
 #     print("Role: [B]arista / [M]anager / [C]lerk")
 #     input(EmployeeRole)
-#     print(" | ")
+#     print("| ")
 #     print("Superannuation: [1]4 % / [2]6 % / [3]8 % (default)")
 #     input(EmployeeSuperannuation)
-#     print(" | ")
+#     print("| ")
 #     print("HealthInsurance:")
 #     print("[A]ncillery / [SU]perior / [ST]andard(default)")
 #     input(EmployeeHealthInsurance)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_EmployeeOptions)
 #     if Footer(Display_EmployeeOptions) == 'C':
 #         # Repeat loop
@@ -526,11 +593,11 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #                             EmployeeSuperannuation, EmployeeHealthInsurance,
 #                             Finished, 0000, 0000, Monday, 0, 0, 0, 0, 0, 0, 0]
 #         print("-----------------------------------------------------------")
-#         print(" | ")
-#         print(" | Generated Employee ID: " + NewEmployeeID)
-#         print(" | ")
-#         print(" | Generated Employee Password: " + NewEmployeePass)
-#         print(" | ")
+#         print("| ")
+#         print("| Generated Employee ID: " + NewEmployeeID)
+#         print("| ")
+#         print("| Generated Employee Password: " + NewEmployeePass)
+#         print("| ")
 #         print("-----------------------------------------------------------")
 #         Display_ClerkOptions(EmployeeID)
 #
@@ -538,18 +605,18 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 # def Display_RemoveEmployee(EmployeeArrayFile):
 #     EmployeetoDelete = ""
 #     Header("Interactive: Clerk", "Remove Employee")
-#     print(" | ")
-#     print(" | Enter employee's details")
-#     print(" | ")
-#     print(" | Employee - ID:")
+#     print("| ")
+#     print("| Enter employee's details")
+#     print("| ")
+#     print("| Employee - ID:")
 #     input("EmployeeIDtoRemove")
-#     print(" | ")
-#     print(" | Clerk - ID:")
+#     print("| ")
+#     print("| Clerk - ID:")
 #     input(ClerkID)
-#     print(" | ")
-#     print(" | Clerk - Password:")
+#     print("| ")
+#     print("| Clerk - Password:")
 #     input(ClerkPassword)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_EmployeeOptions)
 #     if Footer(Display_EmployeeOptions) == 'C':
 #         # Repeat loop
@@ -577,22 +644,22 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 # def Display_EditEmployee(ClerkID):
 #     EmployeeArray = []
 #     Header("Interactive: Clerk", "Edit Employee")
-#     print(" | ")
-#     print(" | Café - Au - Lait - ID:")
+#     print("| ")
+#     print("| Café - Au - Lait - ID:")
 #     input(EmployeeID)
-#     print(" | ")
-#     print(" | Password:")
+#     print("| ")
+#     print("| Password:")
 #     input(EmployeePassword)
-#     print(" | ")
-#     print(" | Role: [B]arista / [M]anager / [C]lerk")
+#     print("| ")
+#     print("| Role: [B]arista / [M]anager / [C]lerk")
 #     input(EmployeeRole)
-#     print(" | ")
-#     print(" | Superannuation: [1]4% / [2]6% / [3]8%")
+#     print("| ")
+#     print("| Superannuation: [1]4% / [2]6% / [3]8%")
 #     input(EmployeeSuperannuation)
-#     print(" | ")
-#     print(" | Health Insurance:")
-#     print(" | [A]ncillery / [SU]perior / [ST]andard(default)")
-#     print(" | ")
+#     print("| ")
+#     print("| Health Insurance:")
+#     print("| [A]ncillery / [SU]perior / [ST]andard(default)")
+#     print("| ")
 #     input(EmployeeHealthInsurance)
 #     Footer(Display_ClerkEmployeeOptions(ClerkID))
 #     if Footer(Display_ClerkEmployeeOptions(ClerkID)) == 'C':
@@ -612,11 +679,11 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 # def Display_FinancialOptions(EmployeeID):
 #     ClerkFinancialOption = ''
 #     Header("Interactive: Clerk", "Financial Options")
-#     print(" | ")
-#     print(" | [T]ax rate / [S]uperannuation / [H]ealth insurance /")
-#     print(" | [P]ay rates(default)")
+#     print("| ")
+#     print("| [T]ax rate / [S]uperannuation / [H]ealth insurance /")
+#     print("| [P]ay rates(default)")
 #     input(ClerkFinancialOption)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_ClerkOptions(EmployeeID))
 #     if Footer(Display_ClerkOptions(EmployeeID)) == 'C':
 #         if ClerkFinancialOption == 'T':
@@ -641,15 +708,15 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     TaxRateprintString = "[" + LoopCounter + "]" + TaxRateArray[LoopCounter] + " % "
 #     LoopCounter = LoopCounter + 1
 #     # Repeat loop condition: Until(LoopCounter==LoopCalculator)
-#     print(" | ")
-#     print(" | " + TaxRateprintStringBegin + TaxRateprintStringEnd)
-#     print(" | ")
-#     print(" | Delete tax rate: // using options 1, 2, 3 etc.")
+#     print("| ")
+#     print("| " + TaxRateprintStringBegin + TaxRateprintStringEnd)
+#     print("| ")
+#     print("| Delete tax rate: // using options 1, 2, 3 etc.")
 #     input(TaxRateToBeDeleted)
-#     print(" | ")
-#     print(" | Add tax rate: // using number without percentage tag")
+#     print("| ")
+#     print("| Add tax rate: // using number without percentage tag")
 #     input(TaxRateToBeAdded)
-#     print(" | ")
+#     print("| ")
 #     Footer(Display_FinancialOptions(EmployeeID))
 #     if Footer(Display_FinancialOptions(EmployeeID)) == 'C':
 #         # Repeat loop
@@ -677,12 +744,12 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     LoopCounter = LoopCounter + 1
 #     # Repeat loop condition: Until(LoopCounter==LoopCalculator)
 #     print("|")
-#     print(" | " + SuperprintStringBegin + SuperprintStringEnd)
-#     print(" | ")
-#     print(" | Delete Superannuation Rate: // using options 1, 2, 3 etc.")
+#     print("| " + SuperprintStringBegin + SuperprintStringEnd)
+#     print("| ")
+#     print("| Delete Superannuation Rate: // using options 1, 2, 3 etc.")
 #     input(SuperToBeDeleted)
 #     print("|")
-#     print(" | Add Superannuation: // using number without percentage tag")
+#     print("| Add Superannuation: // using number without percentage tag")
 #     input(SuperToBeAdded)
 #     print("|")
 #     Footer(Display_FinancialOptions(EmployeeID))
@@ -714,10 +781,10 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     print("|")
 #     print("|" + HealthInsuranceprintStringBegin + HealthInsuranceprintStringEnd)
 #     print("|")
-#     print(" | Delete Health Insurance Plan: // using options 1, 2, etc.")
+#     print("| Delete Health Insurance Plan: // using options 1, 2, etc.")
 #     input(HealthInsuranceToBeDeleted)
 #     print("|")
-#     print(" | Add Health Insurance Plan: // using the price")
+#     print("| Add Health Insurance Plan: // using the price")
 #     input(HealthInsuranceToBeAdded)
 #     print("|")
 #     Footer(Display_FinancialOptions(EmployeeID))
@@ -750,10 +817,10 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     print("|")
 #     print("|" + PayRateprintStringBegin + PayRateprintStringEnd)
 #     print("|")
-#     print(" | Delete Payrate: // using options 1, 2, etc.")
+#     print("| Delete Payrate: // using options 1, 2, etc.")
 #     input(PayRateToBeDeleted)
 #     print("|")
-#     print(" | Add Role: // Enter the name")
+#     print("| Add Role: // Enter the name")
 #     input(RoleToBeAdded)
 #     print("|")
 #     print("| Add Pay Rate: // Enter the hourly rate as an integer")
@@ -808,38 +875,38 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     NetPay = CalculateNetPay(GrossPay, Tax)
 #     Header("Interactive: Clerk", DescriptiveIntroduction)
 #     print("|")
-#     print(" | Employee Given name:" + EmployeeName)
+#     print("| Employee Given name:" + EmployeeName)
 #     print("|")
-#     print(" | Employee surname:" + EmployeeSurname)
+#     print("| Employee surname:" + EmployeeSurname)
 #     print("|")
-#     print(" | Role: " + Role)
-#     print(" | Hourly rate: " + Role)
+#     print("| Role: " + Role)
+#     print("| Hourly rate: " + Role)
 #     print("|")
-#     print(" | Monday: " + CorrectEmployeeArray[12])
-#     print(" | Tuesday: " + CorrectEmployeeArray[13])
-#     print(" | Wednesday: " + CorrectEmployeeArray[14])
-#     print(" | Thursday: " + CorrectEmployeeArray[15])
-#     print(" | Friday: " + CorrectEmployeeArray[16])
-#     print(" | Saturday: " + CorrectEmployeeArray[17])
-#     print(" | Sunday: " + CorrectEmployeeArray[18])
-#     print(" | Public holiday hours: " + CorrectEmployeeArray[12])
-#     print(" | Public holiday overtime hours: " + PublicHolidayOvertimeHours)
-#     print(" | Overtime hours:" + WeekOvertimeCalculator)
-#     print(" | Saturday overtime hours:" + SaturdayOvertime)
-#     print(" | Sunday overtime hours:" + SundayOvertime)
+#     print("| Monday: " + CorrectEmployeeArray[12])
+#     print("| Tuesday: " + CorrectEmployeeArray[13])
+#     print("| Wednesday: " + CorrectEmployeeArray[14])
+#     print("| Thursday: " + CorrectEmployeeArray[15])
+#     print("| Friday: " + CorrectEmployeeArray[16])
+#     print("| Saturday: " + CorrectEmployeeArray[17])
+#     print("| Sunday: " + CorrectEmployeeArray[18])
+#     print("| Public holiday hours: " + CorrectEmployeeArray[12])
+#     print("| Public holiday overtime hours: " + PublicHolidayOvertimeHours)
+#     print("| Overtime hours:" + WeekOvertimeCalculator)
+#     print("| Saturday overtime hours:" + SaturdayOvertime)
+#     print("| Sunday overtime hours:" + SundayOvertime)
 #     print("|")
-#     print(" | Total hours worked:" + HoursWorked)
+#     print("| Total hours worked:" + HoursWorked)
 #     print("|")
-#     print(" | Base pay:" + BasePay)
-#     print(" | Overtime pay:" + OvertimePay)
-#     print(" | Public holiday pay:" + PublicHolidayPay)
+#     print("| Base pay:" + BasePay)
+#     print("| Overtime pay:" + OvertimePay)
+#     print("| Public holiday pay:" + PublicHolidayPay)
 #     print("|")
-#     print(" | Gross pay:" + GrossPay)
-#     print(" | Superannuation deduction:" + CorrectEmployeeArray[6])
-#     print(" | Health insurance deduction:" + CorrectEmployeeArray[7])
-#     print(" | Tax:" + Tax)
+#     print("| Gross pay:" + GrossPay)
+#     print("| Superannuation deduction:" + CorrectEmployeeArray[6])
+#     print("| Health insurance deduction:" + CorrectEmployeeArray[7])
+#     print("| Tax:" + Tax)
 #     print("|")
-#     print(" | Net pay:" + NetPay)
+#     print("| Net pay:" + NetPay)
 #     print("|")
 #     Footer(Display_Navigation())
 #     if Footer(Display_Navigation()) == 'C':
@@ -853,7 +920,7 @@ def Display_InteractiveMode(EmployeeID, EmployeeArray):
 #     StoreData(DataArray)
 #     CalculateAndPrint(DataArray)
 #     print("|")
-#     print(" | Thankyou for using the test mode.")
+#     print("| Thankyou for using the test mode.")
 #     print("|")
 
 
@@ -928,13 +995,13 @@ else:
 
 if file_exists("EmployeeFile.csv") == False:
     f = open('EmployeeFile.csv', 'a+')
-    f.write("1,Barista,4,15,False,0000,0000,0,0,0,0,0,0,0")
+    f.write("1,Barista,4,15,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("2,Manager,4,15,False,0000,0000,0,0,0,0,0,0,0")
+    f.write("2,Manager,4,15,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("3,Clerk,6,45,False,0000,0000,0,0,0,0,0,0,0")
+    f.write("3,Clerk,6,45,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("4,Barista,8,25,False,0000,0000,0,0,0,0,0,0,0")
+    f.write("4,Barista,8,25,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
     print("CREATED FILE: EmployeeFile")
     f.close()
@@ -950,10 +1017,11 @@ loginGuesses = 0
 guessLimit = 3
 guessesLeft = guessLimit - loginGuesses
 confirmation = False
-Display_Navigation_Loop = False
+display_Navigation_Loop = False
+display_InteractiveClockIn_Return = False
 loginOutput = None
 
-while Display_Navigation_Loop == False:
+while display_Navigation_Loop == False:
     if Display_Navigation() == 't':
         clearconsole()
         print("")
@@ -967,11 +1035,12 @@ while Display_Navigation_Loop == False:
     else:
         clearconsole()
         while loginGuesses < guessLimit:
-            loginOutput = Display_InteractiveLogin(employeeLoginArray)
+            loginOutput = Display_InteractiveLogin(array=employeeLoginArray)
             if loginOutput == False:
                 loginGuesses = loginGuesses + 1
                 guessesLeft = guessesLeft - 1
-                incorrectGuessLeftString = "Incorrect: guess left -- [{}]".format(guessesLeft)
+                clearconsole()
+                incorrectGuessLeftString = "Incorrect: guesses left -- [{}]".format(guessesLeft)
                 print(incorrectGuessLeftString)
                 print("")
             else:
@@ -983,8 +1052,19 @@ while Display_Navigation_Loop == False:
             exit()
         else:
             clearconsole()
-
-            Display_InteractiveMode(loginOutput, ///)
+            specificEmployeeArray = employeeFileArray[FindCurrentEmployee(loginOutput, employeeFileArray)]
+            while display_InteractiveClockIn_Return == False:
+                if Display_InteractiveClockIn(EmployeeID=loginOutput, EmployeeArray=specificEmployeeArray,
+                                              LoginArray=employeeLoginArray) == True:
+                    clearconsole()
+                    Display_Clockin(EmployeeID=loginOutput,CurrentEmployeeArray=specificEmployeeArray,
+                                    LoginArray=employeeLoginArray)
+                    time.sleep(5)
+                    exit()
+                else:
+                    display_InteractiveClockIn_Return == True
+                # end if
+            # end while
         # end if
     # end if
 # end while
