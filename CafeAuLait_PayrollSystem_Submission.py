@@ -111,21 +111,12 @@ def readInFile():
 #                                                          ARRAYS                                                      #
 # ======================================================================================================================
 
-# EmployeeArray = [(0)EmployeeID, (1)Password, (2)GivenName, (3)Surname, (4)Role, (5)HourlyPay,
-#                 (6)SuperAnnuation, (7)HealthInsurance, (8)ClockStatus, (9)ClockinTime,
-#                 (10)ClockoutTime, (11)CurrentDay, (12)MondayHours, (13)TuesdayHours,
-#                 (14)WednesdayHours, (15)ThursdayHours, (16)FridayHours, (17)SaturdayHours,
-#                 (18)SundayHours]
-EmployeeArrayLength = 19
-EmployeeArray = [None] * EmployeeArrayLength
-
-# RolePaymentRecord = ['Barista', '23', 'Manager', '30', 'Clerk', '50']
-# TaxRateRecord = ['30', '40']
-# SuperannnuationRecord = ['4', '6', '8']
-# HealthInsuranceRecord = ['15', '25', '45']
-# WeeklyPaymentRecord = ['Employee1Pay', 'Employee2Pay' etc.]
-# DataRecord = []
-
+# (1) employeeLogin
+# (2) superannuation
+# (3) taxRates
+# (4) healthInsurance
+# (5) rolePayment
+# (6) employeeFile
 
 # ======================================================================================================================
 #                                                  ALGORITHMIC FUNCTIONS                                               #
@@ -135,32 +126,24 @@ def ArrayLengthCalculator(array):
     length = 1
     for entities in array:
         length = length + 1
-    # End For
-
-
-# End Module
+    # end for
+# end def
 
 def isInt(number):
     if number - int(number) == 0:
         return True
     else:
         return False
-    # End if
-
-
-# End Module
+    # end if
+# end def
 
 def clearconsole():
     os.system('cls' if os.name == 'nt' else 'clear')
-
-
-# End Module
+# end def
 
 def file_exists(filename):
     result = os.path.isfile(filename)
     return result
-
-
 # end def
 
 def writeList2CSVFile(listObject, fileObject):
@@ -180,25 +163,114 @@ def writeList2CSVFile(listObject, fileObject):
     # end for
 # end def
 
-
 def readCSVline2List(fileLineString):
-    # This function takes a string argument representing a line from a csv formatted file and returns the populated
-    # the named listobject (array/list) of items/values
-
-    # uses Python's .split method to divide the fileLineString into separate values/items at each "," delimitation
-
-    # list = fileLineString.strip()
-
     listObject = fileLineString.split(",")
-
     return listObject
 # end def
 
 
+def readCSVline2List(fileLineString):
+    # This function takes a string argument representing a line from a csv formatted file and returns the populated
+    # the named listobject (array/list) of items/values
+    # uses Python's .split method to divide the fileLineString into separate values/items at each "," delimitation
+    # list = fileLineString.strip()
+    listObject = fileLineString.split(",")
+    return listObject
+# end def
+
+def convertListToArray(list):
+    pos = 0
+    arrayLength = 0
+    outputArray = [None]
+    for item in list:
+        arrayLength = arrayLength + 1
+    # end for
+    outputArray = [None]*arrayLength
+    for item in list:
+        outputArray[pos] = str(list[pos])
+        pos = pos + 1
+    # end for
+    return outputArray
+# end def
+
+def readCSV2Array(filename):
+    myRecord_list = []
+    inputFileObject = open(filename, "r")                   # open the file for reading lines from
+    #myHeader_list = readCSVline2List(currentLine)          # place first line of file into list object, myHeaderList
+    #print(myHeader_list)                                    # display the header line of the csv file on the console
+    for currentLine in inputFileObject:                     # iterate over each line in the input file
+        currentLine = currentLine.strip()
+        myRecord_list = myRecord_list + readCSVline2List(currentLine)  # put each line of the file into the array/list object
+    # end for
+    myRecord_Array = convertListToArray(myRecord_list)
+    inputFileObject.close()
+    return myRecord_Array
+# end def
+
+def convertListTo2DArray(list_of_lists):
+    arrayPos = 0
+    subItemPos = 0
+    listPos = 0
+    arrayLength = 0
+    subArrayLength = 0
+    outputArray = [None]
+    for list in list_of_lists:
+        arrayLength = arrayLength + 1
+    # end for
+
+    for list in list_of_lists:
+        for item in list:
+            subArrayLength = subArrayLength + 1
+    # end for
+    subArrayLength = int((subArrayLength + 1) / arrayLength)
+    outputArray = [None] * arrayLength
+    for list in list_of_lists:
+        subArray = [None] * subArrayLength
+        for item in list:
+            subArray[subItemPos] = str(list[subItemPos])
+            subItemPos = subItemPos + 1
+        # end for
+        outputArray[arrayPos] = subArray
+        arrayPos = arrayPos + 1
+        subItemPos = 0
+    # end for
+    return outputArray
+# end def
+
+def readCSVto2DArray(filename):
+    lineCounter = 0
+    counter = 0
+    twoDimensionalList = [None]
+    myRecord_list = []
+    inputFileObject = open(filename, "r")  # open the file for reading lines from
+    # myHeader_list = readCSVline2List(currentLine)          # place first line of file into list object, myHeaderList
+    # print(myHeader_list)                                    # display the header line of the csv file on the console
+    for line in inputFileObject:
+        if line != "\n":
+            lineCounter = lineCounter + 1
+        # end if
+    # end for
+    inputFileObject.close
+    inputFileObject = open(filename, "r")
+    twoDimensionalList = [None]*lineCounter
+    for currentLine in inputFileObject:  # iterate over each line in the input file
+        currentLine = currentLine.strip()
+        myRecord_list = readCSVline2List(currentLine)  # put each line of the file into the array/list object
+        twoDimensionalList[counter] = myRecord_list
+        counter = counter + 1
+    # end for
+    myRecord_Array = convertListTo2DArray(twoDimensionalList)
+    inputFileObject.close()
+    return myRecord_Array
+# end def
+
+# ======================================================================================================================
+#                                                 DEBUGGING FUNCTIONS                                                  #
+# ======================================================================================================================
+
 # ======================================================================================================================
 #                                                   DISPLAY FUNCTIONS                                                  #
 # ======================================================================================================================
-
 
 def Header(SystemHeader, HeaderMessage):
     print("--------------------------------------------------------------------------------")
@@ -215,7 +287,7 @@ def Footer(PreviousPageFunction):
     print("| [R]eturn")
     print("| [C]onfirm")
     print("----------------------------------------------------------------------------------------")
-    input(SelectedNavigation)
+    SelectedNavigation = input("::")
     while (Confirmation != 1):
         if SelectedNavigation == 'R':
             Confirmation = 1
@@ -234,9 +306,8 @@ def Display_Navigation():
     print("|Please select the required mode to be used:")
     print("|")
     print("|[T]est mode/[I]nteractive mode (default)")
-    input(optionSelected)
-    if optionSelected == 'T' or optionSelected == 't':
-        return 'test'
+    optionSelected = input("::")
+    return optionSelected.lower()
     # End if
 # End Module
 
@@ -249,11 +320,9 @@ def Display_InteractiveLogin():
     Guesses = 0
     Header("Interactive: Log-in", "Interactive mode selected")
     print("|")
-    print("| Café-Au-Lait-ID:")
-    input(EmployeeID)
+    EmployeeID = input("| Café-Au-Lait-ID:")
     print("|")
-    print("| Password:")
-    input(Password)
+    Password = input("| Password:")
     print("|")
     if Footer(Display_Navigation()) == 'C' or Footer(Display_Navigation()) == 'c':
         EmployeeID = str(EmployeeID)
@@ -276,35 +345,34 @@ def Display_InteractiveLogin():
 #     EmployeeWelcome = "Welcome Employee" + EmployeeName
 #     Header("Interactive: Employee", EmployeeName)
 #     print(" | ")
-#     print(" | Clock - [I]n / [O]ut(default)")
-#     input(clockSelection)
+#     clockSelection = input(" | Clock - [I]n / [O]ut(default)")
 #     print(" | ")
 #     print(" | // input the day using the designated 3 letter shortened word")
 #     print(" | ")
 #     print(" | [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
-#     print("Day:")
+#     DaySelection = input("Day:")
 #     # Repeat loop here
-#     input(DaySelection)
 #     if DaySelection != 'MON' and DaySelection != 'TUE' and DaySelection != 'WED' and DaySelection != 'THU' and DaySelection != 'FRI' and DaySelection != 'SAT' and DaySelection != 'SUN':
 #         print(" ")
 #         print("ERROR: Please enter a valid day")
 #     else:
 #         Confirmation = 1
+#     DaySelection = input("Day:")
 #     # Loop condition: Until(Confirmation = 1)
 #     Confirmation = 0
 #     print(" | ")
 #     print(" | ")
 #     print(" | // input day using the time code hhmm e.g. 11:00am is 1100")
 #     print(" | ")
-#     print("Time:")
+#     TimeStamp = input("Time:")
 #     # Repeat loop here
-#     input(TimeStamp)
 #     TimeChecker(TimeStamp)
 #     if TimeChecker == 'Y' or TimeChecker == 'y':
 #         Confirmation = 1
 #     else:
 #         print("")
 #         print("ERROR: Please enter valid time")
+#     TimeStamp = input("Time:")
 #     # Repeat condition: Until(Confirmation==1)
 #     Confirmation = 0
 #     Footer(Display_InteractiveLogin(EmployeeFileArray))
@@ -789,67 +857,102 @@ def Display_InteractiveLogin():
 guesses = 0
 confirmation = False
 
-if file_exists("EmployeeLoginDetails") == False:
+if file_exists("EmployeeLoginDetails.csv") == False:
     f = open('EmployeeLoginDetails.csv', 'a+')
-    f.write("1", "Billy", "Bob", "EmployeePass123")
+    f.write("1, Billy, Bob, EmployeePass123")
     f.write("\n")
-    f.write("2", "Timmy", "Tom", "EmployeePass456")
+    f.write("2, Timmy, Tom, EmployeePass456")
     f.write("\n")
-    f.write("2", "Timmy", "Tom", "EmployeePass456")
+    f.write("3, Charlie, Chaplin, ManagerPass123")
     f.write("\n")
-    f.write("3", "Charlie", "Chaplin", "ManagerPass123")
+    f.write("4, Telina, Swarez, ClerkPass432")
     f.write("\n")
-    f.write("4", "Telina", "Swarez", "ClerkPass432")
-    f.write("\n")
+    print("CREATED FILE: EmployeeLoginDetails")
+    f.close()
+else:
+    employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
 
-if file_exists("SuperannuationRates") == False:
+if file_exists("SuperannuationRates.csv") == False:
     f = open('SuperannuationRates.csv', 'a+')
     f.write("4")
+    f.write("\n")
     f.write("6")
+    f.write("\n")
     f.write("8")
+    f.write("\n")
+    print("CREATED FILE: SuperannuationRates")
+    f.close()
+else:
+    superannuationArray = readCSV2Array('SuperannuationRates.csv')
 
-if file_exists("TaxRates") == False:
+if file_exists("TaxRates.csv") == False:
     f = open('TaxRates.csv', 'a+')
     f.write("30")
+    f.write("\n")
     f.write("40")
+    f.write("\n")
+    print("CREATED FILE: TaxRates")
+    f.close()
+else:
+    taxRatesArray = readCSV2Array('TaxRates.csv')
 
-if file_exists("HealthInsurance") == False:
+if file_exists("HealthInsurance.csv") == False:
     f = open('HealthInsurance.csv', 'a+')
     f.write("15")
+    f.write("\n")
     f.write("25")
+    f.write("\n")
     f.write("45")
+    f.write("\n")
+    print("CREATED FILE: HealthInsurance")
+    f.close()
+else:
+    healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
 
-if file_exists("RolePaymentRecord") == False:
+if file_exists("RolePaymentRecord.csv") == False:
     f = open('RolePaymentRecord.csv', 'a+')
-    f.write("Role", "Rate")
+    f.write("Barista, 23")
     f.write("\n")
-    f.write("Barista", "23")
+    f.write("Manager, 30")
     f.write("\n")
-    f.write("Manager", "30")
+    f.write("Clerk, 50")
     f.write("\n")
-    f.write("Clerk", "50")
-    f.write("\n")
+    print("CREATED FILE: RolePaymentRecord")
+    f.close()
+else:
+    rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
 
-if file_exists("EmployeeFile") == False:
-    f = open('RolePaymentRecord.csv', 'a+')
-    f.write("EmployeeID, Role, SuperAnnuation, HealthInsurance, ClockStatus, ClockinTime, ClockoutTime, MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours")
+if file_exists("EmployeeFile.csv") == False:
+    f = open('EmployeeFile.csv', 'a+')
+    f.write("1, Barista, 4, 15, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
     f.write("\n")
-    f.write("1, Barista, ")
+    f.write("2, Manager, 4, 15, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
     f.write("\n")
-    f.write("Manager", "30")
+    f.write("3, Clerk, 6, 45, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
     f.write("\n")
-    f.write("Clerk", "50")
+    f.write("4, Barista, 8, 25, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
     f.write("\n")
+    print("CREATED FILE: EmployeeFile")
+    f.close()
+else:
+    employeeFileArray = readCSVto2DArray('EmployeeFile.csv')
 
 if Display_Navigation() == 't':
     clearconsole()
     print("")
+    print(employeeLoginArray)
+    print(superannuationArray)
+    print(taxRatesArray)
+    print(healthInsuranceArray)
+    print(rolePaymentArray)
+    print(employeeFileArray)
     # Display_TestMode(FileToBeRead)
 else:
-    while guesses < 3 and confirmation == False:
-        clearconsole()
-        if Display_InteractiveLogin()
-    # End loop
+    print("GAHHH")
+    # while guesses < 3 and confirmation == False:
+    #     clearconsole()
+    #     if Display_InteractiveLogin()
+    # # End loop
 # End if
 
 # end mainline code
