@@ -278,27 +278,29 @@ def Header(SystemHeader, HeaderMessage):
     print("--------------------------------------------------------------------------------")
     print("| " + HeaderMessage)
     print("--------------------------------------------------------------------------------")
-# end Module
+# end module
 
-def Footer(PreviousPageFunction):
+def Footer():
     SelectedNavigation = ''
-    Confirmation = 0
+    Breakout = False
+    Confirmation = False
     print("----------------------------------------------------------------------------------------")
     print("| [R]eturn")
     print("| [C]onfirm")
     print("----------------------------------------------------------------------------------------")
-    SelectedNavigation = input("::")
-    while (Confirmation != 1):
-        if SelectedNavigation == 'R':
-            Confirmation = 1
-            PreviousPageFunction
-        elif SelectedNavigation == 'C':
-            return 'C'
-        elif SelectedNavigation != 'C' and SelectedNavigation != 'R':
+    while Breakout == False:
+        SelectedNavigation = input("::")
+        if SelectedNavigation.lower() == 'r':
+            Breakout = True
+        elif SelectedNavigation.lower() == 'c':
+            Confirmation = True
+            Breakout = True
+        elif SelectedNavigation.lower() != 'c' and SelectedNavigation.lower() != 'r':
             print("Please select a valid option")
-        # End if
-    # End While
-# End Module
+        # end if
+    # end while
+    return Confirmation
+# end module
 
 def Display_Navigation():
     optionSelected = ''
@@ -308,104 +310,109 @@ def Display_Navigation():
     print("|[T]est mode/[I]nteractive mode (default)")
     optionSelected = input("::")
     return optionSelected.lower()
-    # End if
-# End Module
+    # end if
+# end def
 
 
-def Display_InteractiveLogin():
-    outputArrayLength = 2
-    outputArray = [None] * 2
+def Display_InteractiveLogin(array):
+    login = False
     EmployeeID = ''
     Password = ''
-    Guesses = 0
     Header("Interactive: Log-in", "Interactive mode selected")
     print("|")
     EmployeeID = input("| Café-Au-Lait-ID:")
     print("|")
     Password = input("| Password:")
     print("|")
-    if Footer(Display_Navigation()) == 'C' or Footer(Display_Navigation()) == 'c':
+    if Footer() == True:
         EmployeeID = str(EmployeeID)
-        outputArray[0] = EmployeeID
-        outputArray[1] = Password
-        print(outputArray)
-        return outputArray
-    if Guesses == 3:
-        print("ERROR: INVALID EMPLOYEE")
-        Display_Navigation()
+        Password = str(Password)
+        for employees in array:
+            print("Actual Employee:" + employees[0])
+            print("Actual Password:" + employees[3])
+            print("Inputted EmployeeID:" + EmployeeID)
+            print("Inputted Password:" + Password)
+            if employees[0] == EmployeeID and employees[3] == Password:
+                return EmployeeID
+            # end if
+        # end for
+        return login
+    # end if
+# end def
 
 
-# def Display_InteractiveMode(EmployeeID, EmployeeArray):
-#     TimeStamp = 0000
-#     DaySelection = ""
-#     clockSelection = ""
-#     Confirmation = 0
-#     HoursWorked = 0
-#     EmployeeName = EmployeeArray[1]
-#     EmployeeWelcome = "Welcome Employee" + EmployeeName
-#     Header("Interactive: Employee", EmployeeName)
-#     print(" | ")
-#     clockSelection = input(" | Clock - [I]n / [O]ut(default)")
-#     print(" | ")
-#     print(" | // input the day using the designated 3 letter shortened word")
-#     print(" | ")
-#     print(" | [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
-#     DaySelection = input("Day:")
-#     # Repeat loop here
-#     if DaySelection != 'MON' and DaySelection != 'TUE' and DaySelection != 'WED' and DaySelection != 'THU' and DaySelection != 'FRI' and DaySelection != 'SAT' and DaySelection != 'SUN':
-#         print(" ")
-#         print("ERROR: Please enter a valid day")
-#     else:
-#         Confirmation = 1
-#     DaySelection = input("Day:")
-#     # Loop condition: Until(Confirmation = 1)
-#     Confirmation = 0
-#     print(" | ")
-#     print(" | ")
-#     print(" | // input day using the time code hhmm e.g. 11:00am is 1100")
-#     print(" | ")
-#     TimeStamp = input("Time:")
-#     # Repeat loop here
-#     TimeChecker(TimeStamp)
-#     if TimeChecker == 'Y' or TimeChecker == 'y':
-#         Confirmation = 1
-#     else:
-#         print("")
-#         print("ERROR: Please enter valid time")
-#     TimeStamp = input("Time:")
-#     # Repeat condition: Until(Confirmation==1)
-#     Confirmation = 0
-#     Footer(Display_InteractiveLogin(EmployeeFileArray))
-#     if Footer(Display_InteractiveLogin(EmployeeFileArray)) == 'C':
-#         if clockSelection == 'I':
-#             EmployeeArray[8] = "CLOCK - IN"
-#             EmployeeArray[9] = TimeStamp
-#             EmployeeArray[10] = "Shift in progress"
-#         else:
-#             EmployeeArray[8] = "CLOCK - OUT"
-#             EmployeeArray[9] = TimeStamp
-#             HoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
-#         if DaySelection == 'MON':
-#             EmployeeArray[12] = HoursWorked
-#             EmployeeArray[11] = "MONDAY"
-#         elif DaySelection == 'TUE':
-#             EmployeeArray[13] = HoursWorked
-#             EmployeeArray[11] = "TUESDAY"
-#         elif DaySelection == 'WED':
-#             EmployeeArray[14] = HoursWorked
-#             EmployeeArray[11] = "WEDNESDAY"
-#         elif DaySelection == 'THU':
-#             EmployeeArray[15] = HoursWorked
-#             EmployeeArray[11] = "THURSDAY"
-#         elif DaySelection == 'FRI':
-#             EmployeeArray[16] = HoursWorked
-#             EmployeeArray[11] = "FRIDAY"
-#         elif DaySelection == 'SAT':
-#             EmployeeArray[17] = HoursWorked
-#             EmployeeArray[11] = "SATURDAY"
-#         elif DaySelection == 'SUN':
-#             EmployeeArray[18] = HoursWorked
-#             EmployeeArray[19] = "SUNDAY"
+
+def Display_InteractiveMode(EmployeeID, EmployeeArray):
+    TimeStamp = 0000
+    DaySelection = ""
+    clockSelection = ""
+    Confirmation = 0
+    HoursWorked = 0
+    EmployeeName = EmployeeArray[1]
+    EmployeeWelcome = "Welcome Employee" + EmployeeName
+    Header("Interactive: Employee", EmployeeName)
+    print(" | ")
+    clockSelection = input(" | Clock - [I]n / [O]ut(default)")
+    print(" | ")
+    print(" | // input the day using the designated 3 letter shortened word")
+    print(" | ")
+    print(" | [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
+    DaySelection = input("Day:")
+    # Repeat loop here
+    if DaySelection != 'MON' and DaySelection != 'TUE' and DaySelection != 'WED' and DaySelection != 'THU' and DaySelection != 'FRI' and DaySelection != 'SAT' and DaySelection != 'SUN':
+        print(" ")
+        print("ERROR: Please enter a valid day")
+    else:
+        Confirmation = 1
+    DaySelection = input("Day:")
+    # Loop condition: Until(Confirmation = 1)
+    Confirmation = 0
+    print(" | ")
+    print(" | ")
+    print(" | // input day using the time code hhmm e.g. 11:00am is 1100")
+    print(" | ")
+    TimeStamp = input("Time:")
+    # Repeat loop here
+    TimeChecker(TimeStamp)
+    if TimeChecker == 'Y' or TimeChecker == 'y':
+        Confirmation = 1
+    else:
+        print("")
+        print("ERROR: Please enter valid time")
+    TimeStamp = input("Time:")
+    # Repeat condition: Until(Confirmation==1)
+    Confirmation = 0
+    Footer(Display_InteractiveLogin(EmployeeFileArray))
+    if Footer(Display_InteractiveLogin(EmployeeFileArray)) == 'C':
+        if clockSelection == 'I':
+            EmployeeArray[8] = "CLOCK - IN"
+            EmployeeArray[9] = TimeStamp
+            EmployeeArray[10] = "Shift in progress"
+        else:
+            EmployeeArray[8] = "CLOCK - OUT"
+            EmployeeArray[9] = TimeStamp
+            HoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
+        if DaySelection == 'MON':
+            EmployeeArray[12] = HoursWorked
+            EmployeeArray[11] = "MONDAY"
+        elif DaySelection == 'TUE':
+            EmployeeArray[13] = HoursWorked
+            EmployeeArray[11] = "TUESDAY"
+        elif DaySelection == 'WED':
+            EmployeeArray[14] = HoursWorked
+            EmployeeArray[11] = "WEDNESDAY"
+        elif DaySelection == 'THU':
+            EmployeeArray[15] = HoursWorked
+            EmployeeArray[11] = "THURSDAY"
+        elif DaySelection == 'FRI':
+            EmployeeArray[16] = HoursWorked
+            EmployeeArray[11] = "FRIDAY"
+        elif DaySelection == 'SAT':
+            EmployeeArray[17] = HoursWorked
+            EmployeeArray[11] = "SATURDAY"
+        elif DaySelection == 'SUN':
+            EmployeeArray[18] = HoursWorked
+            EmployeeArray[19] = "SUNDAY"
 #
 #
 # def Display_Clockinprint(EmployeeID, EmployeeFileArray, EmployeeArray):
@@ -851,21 +858,18 @@ def Display_InteractiveLogin():
 
 
 # ======================================================================================================================
-# mainline code begins below
+# File Setup
 # ======================================================================================================================
-
-guesses = 0
-confirmation = False
 
 if file_exists("EmployeeLoginDetails.csv") == False:
     f = open('EmployeeLoginDetails.csv', 'a+')
-    f.write("1, Billy, Bob, EmployeePass123")
+    f.write("1,Billy,Bob,EmployeePass123")
     f.write("\n")
-    f.write("2, Timmy, Tom, EmployeePass456")
+    f.write("2,Timmy,Tom,EmployeePass456")
     f.write("\n")
-    f.write("3, Charlie, Chaplin, ManagerPass123")
+    f.write("3,Charlie,Chaplin,ManagerPass123")
     f.write("\n")
-    f.write("4, Telina, Swarez, ClerkPass432")
+    f.write("4,Telina,Swarez,ClerkPass432")
     f.write("\n")
     print("CREATED FILE: EmployeeLoginDetails")
     f.close()
@@ -911,11 +915,11 @@ else:
 
 if file_exists("RolePaymentRecord.csv") == False:
     f = open('RolePaymentRecord.csv', 'a+')
-    f.write("Barista, 23")
+    f.write("Barista,23")
     f.write("\n")
-    f.write("Manager, 30")
+    f.write("Manager,30")
     f.write("\n")
-    f.write("Clerk, 50")
+    f.write("Clerk,50")
     f.write("\n")
     print("CREATED FILE: RolePaymentRecord")
     f.close()
@@ -924,36 +928,66 @@ else:
 
 if file_exists("EmployeeFile.csv") == False:
     f = open('EmployeeFile.csv', 'a+')
-    f.write("1, Barista, 4, 15, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
+    f.write("1,Barista,4,15,False,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("2, Manager, 4, 15, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
+    f.write("2,Manager,4,15,False,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("3, Clerk, 6, 45, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
+    f.write("3,Clerk,6,45,False,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
-    f.write("4, Barista, 8, 25, False, 0000, 0000, 0, 0, 0, 0, 0, 0, 0")
+    f.write("4,Barista,8,25,False,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
     print("CREATED FILE: EmployeeFile")
     f.close()
 else:
     employeeFileArray = readCSVto2DArray('EmployeeFile.csv')
 
-if Display_Navigation() == 't':
-    clearconsole()
-    print("")
-    print(employeeLoginArray)
-    print(superannuationArray)
-    print(taxRatesArray)
-    print(healthInsuranceArray)
-    print(rolePaymentArray)
-    print(employeeFileArray)
-    # Display_TestMode(FileToBeRead)
-else:
-    print("GAHHH")
-    # while guesses < 3 and confirmation == False:
-    #     clearconsole()
-    #     if Display_InteractiveLogin()
-    # # End loop
-# End if
+
+# ======================================================================================================================
+# mainline code begins below
+# ======================================================================================================================
+
+loginGuesses = 0
+guessLimit = 3
+guessesLeft = guessLimit - loginGuesses
+confirmation = False
+Display_Navigation_Loop = False
+loginOutput = None
+
+while Display_Navigation_Loop == False:
+    if Display_Navigation() == 't':
+        clearconsole()
+        print("")
+        print(employeeLoginArray)
+        print(superannuationArray)
+        print(taxRatesArray)
+        print(healthInsuranceArray)
+        print(rolePaymentArray)
+        print(employeeFileArray)
+        # Display_TestMode(FileToBeRead)
+    else:
+        clearconsole()
+        while loginGuesses < guessLimit:
+            loginOutput = Display_InteractiveLogin(employeeLoginArray)
+            if loginOutput == False:
+                loginGuesses = loginGuesses + 1
+                guessesLeft = guessesLeft - 1
+                incorrectGuessLeftString = "Incorrect: guess left -- [{}]".format(guessesLeft)
+                print(incorrectGuessLeftString)
+                print("")
+            else:
+                loginGuesses = guessLimit + 1
+            # end if
+        # end while
+        if loginGuesses == guessLimit:
+            print("Account lockout: please contact administrator")
+            exit()
+        else:
+            clearconsole()
+
+            Display_InteractiveMode(loginOutput, ///)
+        # end if
+    # end if
+# end while
 
 # end mainline code
 # ======================================================================================================================
