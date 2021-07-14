@@ -17,63 +17,14 @@ import time
 #                                                 TO-BE COMPLETED FUNCTIONS                                            #
 # ======================================================================================================================
 
-def GenerateEmployeeID(EmployeeLoginArray):
-    newEmployeeID = int(ArrayLengthCalculator(EmployeeLoginArray)) + 1
-    return newEmployeeID
-
-def RandomGenerateEmployeePass():
-    print("TBA")
-
 def ArrayValidationAndDeletion(SpecificValueToBeDeleted, Array):
     print("TBA")
-
 
 def ArrayValidationAndAddition(SpecificValueToBeAdded, Array):
     print("TBA")
 
-
-def FindPaymentForRole(EmployeeRole):
-    print("TBA")
-
-
-def CalculateBasePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours,
-                     HourlyRate):
-    print("TBA")
-
-
-def OvertimeCalculator(DayHours):
-    print("TBA")
-
-
-def WeekOvertimeCalculator(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
-                           SundayHours):
-    print("TBA")
-
-
-def CalculateOvertimePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
-                         SundayHours):
-    print("TBA")
-
-
-def CalculatePublicHolidayPay(PublicHolidayHours, HourlyPay):
-    print("TBA")
-
-
-def CalculateTotalPay(BasePay, OvertimePay, PublicHolidayPay, PublicHolidayHours):
-    print("TBA")
-
-
-def CalculateTax(GrossPay, Role):
-    print("TBA")
-
-
-def CalculateNetPay(GrossPay, Tax):
-    print("TBA")
-
-
 def SortData(DataArray):
     print("TBA")
-
 
 def StoreData(DataArray):
     print("TBA")
@@ -81,11 +32,6 @@ def StoreData(DataArray):
 
 def CalculateAndPrint(DataArray):
     print("TBA")
-
-
-def readInFile():
-    print("TBA")
-
 
 # ======================================================================================================================
 #                                                          ARRAYS                                                      #
@@ -103,9 +49,10 @@ def readInFile():
 # ======================================================================================================================
 
 def ArrayLengthCalculator(array):
-    length = 1
+    length = 0
     for entities in array:
         length = length + 1
+    return length
     # end for
 # end def
 
@@ -288,6 +235,179 @@ def ValidateRole(EmployeeRole, RolePayArray):
     # end for
 # end def
 
+def GenerateEmployeeID(EmployeeLoginArray):
+    newEmployeeID = int(ArrayLengthCalculator(EmployeeLoginArray)) + 1
+    return newEmployeeID
+# end def
+
+def GenerateEmployeePass(EmployeeLoginArray, Role):
+    arrayLength = ArrayLengthCalculator(EmployeeLoginArray)
+    validatePass = False
+    validationCounter = 0
+    employeePass = ''
+    endingNum = 0
+    while validatePass == False:
+        endingNum = randint(100, 999)
+        employeePass = Role + "Pass" + str(endingNum)
+        for password in EmployeeLoginArray:
+            if password[3] != employeePass:
+                validationCounter = validationCounter + 1
+            # end if
+        # end for
+        if validationCounter == arrayLength:
+            return employeePass
+        validationCounter = 0
+        #end if
+    # end while
+# end def
+
+def CalculateTotalHours(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours):
+    hoursWorked = MondayHours + TuesdayHours + WednesdayHours + ThursdayHours + FridayHours + SaturdayHours + SundayHours
+    return hoursWorked
+# end def
+
+def OvertimeCalculator(DayHours):
+    overTime = 0
+    if DayHours > 8:
+        overTime = int(DayHours) + 1
+    # end def
+    return overTime
+# end def
+
+def CalculateBasePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours,
+                     HourlyRate):
+    basePay = CalculateTotalHours(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
+                                  SundayHours) * HourlyRate
+    return basePay
+
+def WeekOvertimeCalculator(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
+                           SundayHours):
+    MondayOvertime = OvertimeCalculator(MondayHours)
+    TuesdayOvertime = OvertimeCalculator(TuesdayHours)
+    WednesdayOvertime = OvertimeCalculator(WednesdayHours)
+    ThurdayOvertime = OvertimeCalculator(ThursdayHours)
+    FridayOvertime = OvertimeCalculator(FridayHours)
+    SaturdayOvertime = OvertimeCalculator(SaturdayHours)
+    SundayOvertime = OvertimeCalculator(SundayHours)
+    TotalOvertime = MondayOvertime + TuesdayOvertime + WednesdayOvertime + ThurdayOvertime + FridayOvertime + \
+                    SaturdayOvertime + SundayOvertime
+    return TotalOvertime
+
+def CalculateTax(GrossPay, HourlyRate, TaxRatesArray):
+    taxRate = 0
+    totalTax = 0
+    taxArray = sorted(TaxRatesArray)
+    if HourlyRate < 30:
+        taxRate = TaxRatesArray[0]/100
+    elif HourlyRate < 60:
+        taxRate = TaxRatesArray[1]/100
+    else:
+        if ArrayLengthCalculator(TaxRatesArray) > 2:
+            taxRate = TaxRatesArray[2]/100
+        else:
+            taxRate = TaxRatesArray[1]/100
+        # end if
+    # end if
+    totalTax = GrossPay*taxRate
+    totalTax = round(totalTax, 2)
+    return totalTax
+# end def
+
+def CalculateNetPay(GrossPay, Tax, SuperRate, HealthInsurnace):
+    SuperDeduction = GrossPay*(SuperRate/100)
+    netPay = GrossPay - Tax - SuperDeduction - HealthInsurnace
+    return netPay
+# end def
+
+def CalculateOvertimePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
+                         SundayHours, HourlyRate):
+    MondayOvertime = OvertimeCalculator(MondayHours)
+    TuesdayOvertime = OvertimeCalculator(TuesdayHours)
+    WednesdayOvertime = OvertimeCalculator(WednesdayHours)
+    ThursdayOvertime = OvertimeCalculator(ThursdayHours)
+    FridayOvertime = OvertimeCalculator(FridayHours)
+    SaturdayOvertime = OvertimeCalculator(SaturdayHours)
+    SundayOvertime = OvertimeCalculator(SundayHours)
+    MondayOvertimePay = 0
+    TuesdayOvertimePay = 0
+    WednesdayOvertimePay = 0
+    ThursdayOvertimePay = 0
+    FridayOvertimePay = 0
+    SaturdayOvertimePay = 0
+    SundayOvertimePay = 0
+    totalOvertimePay = 0
+    if TuesdayOvertime > 0 and TuesdayOvertime <= 3:
+        TuesdayOvertimePay = TuesdayOvertime*(HourlyRate*1.25)
+    elif TuesdayOvertime > 3:
+        TuesdayOvertimePay = TuesdayOvertime*(HourlyRate*1.45)
+    # end if
+    if WednesdayOvertime > 0 and WednesdayOvertime <= 3:
+        WednesdayOvertimePay = WednesdayOvertime*(HourlyRate*1.25)
+    elif WednesdayOvertime > 3:
+        WednesdayOvertimePay = WednesdayOvertime*(HourlyRate*1.45)
+    # end if
+    if ThuesdayOvertime > 0 and ThursdayOvertime <= 3:
+        ThursdayOvertimePay = ThursdayOvertime*(HourlyRate*1.25)
+    elif ThursdayOvertime > 3:
+        ThursdayOvertimePay = ThursdayOvertime*(HourlyRate*1.45)
+    # end if
+    if FridayOvertime > 0 and FridayOvertime <= 3:
+        FridayOvertimePay = FridayOvertime*(HourlyRate*1.25)
+    elif FridayOvertime > 3:
+        FridayOvertimePay = FridayOvertime*(HourlyRate*1.45)
+    if MondayOvertime > 0:
+        MondayOvertimePay = MondayOvertime*(HourlyRate*1.5)
+    # end if
+    if SaturdayOvertime > 0:
+        SaturdayOvertimePay = SaturdayOvertime*(HourlyRate*1.5)
+    # end if
+    if SundayOvertime > 0:
+        SundayOvertimePay = SundayOvertime*(HourlyRate*1.5)
+    # end if
+    totalOvertimePay = MondayOvertimePay + TuesdayOvertimePay + WednesdayOvertimePay + ThursdayOvertimePay +\
+                       FridayOvertimePay + SaturdayOvertimePay + SundayOvertimePay
+    return totalOvertimePay
+# end def
+
+def CalculatePublicHolidayPay(PublicHolidayHours, hourlyPay):
+    publicHolidayOvertime = OvertimeCalculator(PublicHolidayHours)
+    publicHolidayOvertimePay = 0
+    publicHolidayPay = 0
+    if publicHolidayOvertime > 0:
+        publicHolidayOvertimePay = publicHolidayOvertime*(hourlyPay*1.5)
+    # end if
+    if PublicHolidayHours > 8:
+        publicHolidayPay = 8*(hourlyPay + 4) + publicHolidayOvertimePay
+    else:
+        publicHolidayPay = PublicHolidayHours*(hourlyPay + 4)
+    # end if
+    return publicHolidayPay
+# end def
+
+def CalculateTotalPay(BasePay, OvertimePay, PublicHolidayHours, SaturdayHours, SundayHours):
+    totalPay = 0
+    publicHolidayBenefits = 0
+    saturdayBenefits = 0
+    sundayBenefits = 0
+    if PublicHolidayHours > 8:
+        publicHolidayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
+    else:
+        publicHolidayBenefits = PublicHolidayHours*4
+    #end if
+    if SaturdayHours > 8:
+        saturdayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
+    else:
+        saturdayBenefits = SaturdayHours*3
+    #end if
+    if SundayHours > 8:
+        sundayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
+    else:
+        sundayBenefits = SundayHours*4
+    #end if
+    totalPay = BasePay + OvertimePay + publicHolidayBenefits + saturdayBenefits + sundayBenefits
+    return totalPay
+# end def
+
 # ======================================================================================================================
 #                                                 DEBUGGING FUNCTIONS                                                  #
 # ======================================================================================================================
@@ -376,7 +496,7 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
     daySelectionValidation = False
     clockSelection = ""
     clockSelectionValidation = False
-    HoursWorked = 0
+    hoursWorked = 0
     employeeFirstName = LoginArray[int(EmployeeID)][1]
     employeeLastName = LoginArray[int(EmployeeID)][2]
     EmployeeWelcome = "Welcome Employee: " + employeeFirstName + " " + employeeLastName
@@ -456,21 +576,21 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
         else:
             EmployeeArray[4] = False
             EmployeeArray[7] = timeStamp
-            HoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
+            hoursWorked = TimeCalculator(EmployeeArray[2], EmployeeArray[3])
             if daySelection.lower() == 'mon':
-                EmployeeArray[8] = HoursWorked
+                EmployeeArray[8] = hoursWorked
             elif daySelection.lower() == 'tue':
-                EmployeeArray[9] = HoursWorked
+                EmployeeArray[9] = hoursWorked
             elif daySelection.lower() == 'wed':
-                EmployeeArray[10] = HoursWorked
+                EmployeeArray[10] = hoursWorked
             elif daySelection.lower() == 'thu':
-                EmployeeArray[11] = HoursWorked
+                EmployeeArray[11] = hoursWorked
             elif daySelection.lower() == 'fri':
-                EmployeeArray[12] = HoursWorked
+                EmployeeArray[12] = hoursWorked
             elif daySelection.lower() == 'sat':
-                EmployeeArray[13] = HoursWorked
+                EmployeeArray[13] = hoursWorked
             elif daySelection.lower() == 'sun':
-                EmployeeArray[14] = HoursWorked
+                EmployeeArray[14] = hoursWorked
             # end if
         # end if
         return True
@@ -510,8 +630,8 @@ def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
 
 def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, EmployeeDetailsArray):
     specificEmployee = int(EmployeeID) - 1
-    employeeFirstName = EmployeeNameArray[specificEmployee][1]
-    employeeLastName = EmployeeNameArray[specificEmployee][2]
+    employeeFirstName = employeeNameArray[specificEmployee][1]
+    employeeLastName = employeeNameArray[specificEmployee][2]
     ClerkSelection = ''
     Header("Interactive: Clerk", "Welcome Clerk: " + employeeFirstName + " " + employeeLastName)
     print("| ")
@@ -545,6 +665,7 @@ def Display_ClerkPaymentOptions(ClerkID, EmployeeLoginArray, EmployeeDetailsArra
                 print("Please input a valid employee ID")
             else:
                 employeeFound = True
+                return clerkPaymentEmployeeID
             # end if
         # end while
     # end if
@@ -571,7 +692,7 @@ def Display_ClerkEmployeeOptions(ClerkID):
 # end def
 
 
-def Display_AddEmployee(ClerkID, RolePaymentArray, EmployeeDetailsArray):
+def Display_AddEmployee(EmployeeLoginArray):
     newEmployeeID = ''
     newEmployeePass = ''
     newEmployeeHourlyRate = 0
@@ -581,6 +702,9 @@ def Display_AddEmployee(ClerkID, RolePaymentArray, EmployeeDetailsArray):
     employeeSuperannuation = ''
     employeeHealthInsurance = ''
     employeeRoleValidation = False
+    outputArray = [None]*2
+    newEmployeeLoginArray = [None]*4
+    newEmployeeDetailsArray = [None]*15
     Header("Interactive: Clerk", "Add Employee")
     print("| ")
     print("| Enter employee's details")
@@ -608,62 +732,78 @@ def Display_AddEmployee(ClerkID, RolePaymentArray, EmployeeDetailsArray):
                 employeeRole = input("| [M]anager / [C]lerk / [B]arista (default) :: ")
             else:
                 employeeRoleValidation = True
+            # end if
+        # end while
         newEmployeeHourlyRate = FindPaymentForRole(EmployeeRole)
         newEmployeeID = GenerateEmployeeID()
-        newEmployeePass = RandomGenerateEmployeePass()
-        # EmployeeFileArray.append(NewEmployeeID)
-        # NewEmployeeArray = [NewEmployeeID, NewEmployeePass, EmployeeGivenName,
-        #                     EmployeeSurname, EmployeeRole, NewEmployeeHourlyRate,     ### FIX OUTPUT TO FILE
-        #                     EmployeeSuperannuation, EmployeeHealthInsurance,
-        #                     Finished, 0000, 0000, Monday, 0, 0, 0, 0, 0, 0, 0]
+        newEmployeePass = GenerateEmployeePass(EmployeeLoginArray=EmployeeLoginArray, Role=employeeRole)
+        newEmployeeDetailsArray[0] = newEmployeeID
+        newEmployeeDetailsArray[1] = employeeRole
+        newEmployeeDetailsArray[2] = employeeSuperannuation
+        newEmployeeDetailsArray[3] = employeeHealthInsurance
+        newEmployeeDetailsArray[4] = False
+        newEmployeeDetailsArray[5] = 'MONDAY'
+        newEmployeeDetailsArray[6] = '0000'
+        newEmployeeDetailsArray[7] = '0000'
+        newEmployeeDetailsArray[8] = '0'
+        newEmployeeDetailsArray[9] = '0'
+        newEmployeeDetailsArray[10] = '0'
+        newEmployeeDetailsArray[11] = '0'
+        newEmployeeDetailsArray[12] = '0'
+        newEmployeeDetailsArray[13] = '0'
+        newEmployeeDetailsArray[14] = '0'
+        newEmployeeLoginArray[0] = newEmployeeID
+        newEmployeeLoginArray[1] = employeeGivenName
+        newEmployeeLoginArray[2] = employeeSurname
+        newEmployeeLoginArray[3] = employeeRole
         print("-----------------------------------------------------------")
         print("| ")
-        print("| Generated Employee ID: " + NewEmployeeID)
+        print("| Generated Employee ID: " + newEmployeeID)
         print("| ")
-        print("| Generated Employee Password: " + NewEmployeePass)
+        print("| Generated Employee Password: " + newEmployeePass)
         print("| ")
         print("-----------------------------------------------------------")
+        return outputArray
+    # end if 
+# end def
+
+def Display_RemoveEmployee(EmployeeDetailsArray):
+    EmployeetoDelete = ''
+    Header("Interactive: Clerk", "Remove Employee")
+    print("| ")
+    print("| Enter employee's details")
+    print("| ")
+    print("| Employee - ID:")
+    input("EmployeeIDtoRemove")
+    print("| ")
+    print("| Clerk - ID:")
+    input(ClerkID)
+    print("| ")
+    print("| Clerk - Password:")
+    input(ClerkPassword)
+    print("| ")
+    if Footer() = True:
+        # Repeat loop
+        FindCurrentEmployee(EmployeeIDtoRemove)
+        if FindCurrentEmployee(EmployeeIDtoRemove) == 'False':
+            print("ERROR EMPLOYEE NOT FOUND!")
+            print("Enter Valid Employee: ")
+            input(EmployeeIDtoRemove)
+        # Repeat loop condition: Until(FindCurrentEmployee(EmployeeIDtoRemove) != 'False')
+        # Second Repeat loop
+        FindEmployee(ClerkID, ClerkPassword)
+        if FindEmployee(ClerkID, ClerkPassword) == 'No':
+            print("ERROR CLERK NOT FOUND!")
+            print("Enter Valid Clerk - ID: ")
+            input(ClerkID)
+            print("Enter Valid Clerk - Password: ")
+            input(ClerkPassword)
+        # Repeat loop condition: Until(FindEmployee(ClerkID, ClerkPassword) == 'Yes')
+        EmployeetoDelete = FindCurrentEmployee(EmployeeIDtoRemove)
+        # Delete EmployeetoDelete
+        # Delete EmployeeDetailsArray(EmployeeID)
         Display_ClerkOptions(EmployeeID)
 
-
-# def Display_RemoveEmployee(EmployeeArrayFile):
-#     EmployeetoDelete = ""
-#     Header("Interactive: Clerk", "Remove Employee")
-#     print("| ")
-#     print("| Enter employee's details")
-#     print("| ")
-#     print("| Employee - ID:")
-#     input("EmployeeIDtoRemove")
-#     print("| ")
-#     print("| Clerk - ID:")
-#     input(ClerkID)
-#     print("| ")
-#     print("| Clerk - Password:")
-#     input(ClerkPassword)
-#     print("| ")
-#     Footer(Display_EmployeeOptions)
-#     if Footer(Display_EmployeeOptions) == 'C':
-#         # Repeat loop
-#         FindCurrentEmployee(EmployeeIDtoRemove)
-#         if FindCurrentEmployee(EmployeeIDtoRemove) == 'False':
-#             print("ERROR EMPLOYEE NOT FOUND!")
-#             print("Enter Valid Employee: ")
-#             input(EmployeeIDtoRemove)
-#         # Repeat loop condition: Until(FindCurrentEmployee(EmployeeIDtoRemove) != 'False')
-#         # Second Repeat loop
-#         FindEmployee(ClerkID, ClerkPassword)
-#         if FindEmployee(ClerkID, ClerkPassword) == 'No':
-#             print("ERROR CLERK NOT FOUND!")
-#             print("Enter Valid Clerk - ID: ")
-#             input(ClerkID)
-#             print("Enter Valid Clerk - Password: ")
-#             input(ClerkPassword)
-#         # Repeat loop condition: Until(FindEmployee(ClerkID, ClerkPassword) == 'Yes')
-#         EmployeetoDelete = FindCurrentEmployee(EmployeeIDtoRemove)
-#         # Delete EmployeetoDelete
-#         # Delete EmployeeArrayFile(EmployeeID)
-#         Display_ClerkOptions(EmployeeID)
-#
 #
 # def Display_EditEmployee(ClerkID):
 #     EmployeeArray = []
@@ -870,73 +1010,128 @@ def Display_AddEmployee(ClerkID, RolePaymentArray, EmployeeDetailsArray):
 #     # Repeat loop condition: Until ArrayValidationAndAddition(RoleToBeAdded, RoleNameArray) == 'Complete'
 #
 #
-# def Display_EmployeePaymentScreen(EmployeeID, EmployeeFileArray, EmployeeArray):
-#     CorrectEmployeeArray = FindCurrentEmployee(EmployeeID)
-#     EmployeeName = CorrectEmployeeArray[2]
-#     EmployeeSurname = CorrectEmployeeArray[3]
-#     Role = CorrectEmployeeArray[4]
-#     HourlyPay = CorrectEmployeeArray[5]
-#     DescriptiveIntroduction = "Employee" + EmployeeName + EmployeeID
-#     HoursWorked = CalculateHoursWorked(CorrectEmployeeArray[12], CorrectEmployeeArray[13], CorrectEmployeeArray[14],
-#                                        CorrectEmployeeArray[15], CorrectEmployeeArray[16], CorrectEmployeeArray[17],
-#                                        CorrectEmployeeArray[18])
-#     BasePay = CalculateBasePay(CorrectEmployeeArray[12], CorrectEmployeeArray[13], CorrectEmployeeArray[14],
-#                                CorrectEmployeeArray[15], CorrectEmployeeArray[16], CorrectEmployeeArray[17],
-#                                CorrectEmployeeArray[18], HourlyPay)
-#     PublicHolidayOvertimeHours = OvertimeCalculator(CorrectEmployeeArray[12])
-#     WeekOvertimeHours = WeekOvertimeCalculator(CorrectEmployeeArray[12], CorrectEmployeeArray[13],
-#                                                CorrectEmployeeArray[14], CorrectEmployeeArray[15],
-#                                                CorrectEmployeeArray[16], CorrectEmployeeArray[17],
-#                                                CorrectEmployeeArray[18])
-#     SaturdayOvertime = OvertimeCalculator(CorrectEmployeeArray[17])
-#     SundayOvertime = OvertimeCalculator(CorrectEmployeeArray[18])
-#     OvertimePay = CalculateOvertimePay(CorrectEmployeeArray[12], CorrectEmployeeArray[13], CorrectEmployeeArray[14],
-#                                        CorrectEmployeeArray[15], CorrectEmployeeArray[16], CorrectEmployeeArray[17],
-#                                        CorrectEmployeeArray[18], HourlyPay)
-#     PublicHolidayPay = CalculatePublicHolidayPay(CorrectEmployeeArray[12], HourlyPay)
-#     GrossPay = CalculateTotalPay(BasePay, OvertimePay, PublicHolidayPay, CorrectEmployeeArray[12])
-#     Tax = CalculateTax(GrossPay, Role)
-#     NetPay = CalculateNetPay(GrossPay, Tax)
-#     Header("Interactive: Clerk", DescriptiveIntroduction)
-#     print("|")
-#     print("| Employee Given name:" + EmployeeName)
-#     print("|")
-#     print("| Employee surname:" + EmployeeSurname)
-#     print("|")
-#     print("| Role: " + Role)
-#     print("| Hourly rate: " + Role)
-#     print("|")
-#     print("| Monday: " + CorrectEmployeeArray[12])
-#     print("| Tuesday: " + CorrectEmployeeArray[13])
-#     print("| Wednesday: " + CorrectEmployeeArray[14])
-#     print("| Thursday: " + CorrectEmployeeArray[15])
-#     print("| Friday: " + CorrectEmployeeArray[16])
-#     print("| Saturday: " + CorrectEmployeeArray[17])
-#     print("| Sunday: " + CorrectEmployeeArray[18])
-#     print("| Public holiday hours: " + CorrectEmployeeArray[12])
-#     print("| Public holiday overtime hours: " + PublicHolidayOvertimeHours)
-#     print("| Overtime hours:" + WeekOvertimeCalculator)
-#     print("| Saturday overtime hours:" + SaturdayOvertime)
-#     print("| Sunday overtime hours:" + SundayOvertime)
-#     print("|")
-#     print("| Total hours worked:" + HoursWorked)
-#     print("|")
-#     print("| Base pay:" + BasePay)
-#     print("| Overtime pay:" + OvertimePay)
-#     print("| Public holiday pay:" + PublicHolidayPay)
-#     print("|")
-#     print("| Gross pay:" + GrossPay)
-#     print("| Superannuation deduction:" + CorrectEmployeeArray[6])
-#     print("| Health insurance deduction:" + CorrectEmployeeArray[7])
-#     print("| Tax:" + Tax)
-#     print("|")
-#     print("| Net pay:" + NetPay)
-#     print("|")
-#     Footer(Display_Navigation())
-#     if Footer(Display_Navigation()) == 'C':
-#         Display_Navigation()
-#
-#
+def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeLoginArray, RolePayArray, TaxArray):
+    specificEmployeeDetailsArray = ''
+    specificEmployeeLoginArray = ''
+    employeeArrayPosition = int(EmployeeID) - 1
+    employeeName = ''
+    employeeSurname = ''
+    employeeRole = ''
+    hourlyPay = 0
+    descriptiveIntroduction = ''
+    hoursWorked = 0
+    basePay = 0
+    publicHolidayOvertimeHours = 0
+    weekOvertimeHours = 0
+    saturdayOvertime = 0
+    sundayOvertime = 0
+    overtimePay = 0
+    publicHolidayPay = 0
+    grossPay = 0
+    tax = 0
+    netPay = 0
+    employeeSuperRate = 0
+    employeeHealthPlan = 0
+    if FindCurrentEmployee(EmployeeID, EmployeeLoginArray) == True:
+        specificEmployeeDetailsArray = EmployeeDetailsArray[employeeArrayPosition]
+        specificEmployeeLoginArray = EmployeeLoginArray[employeeArrayPosition]
+        employeeName = str(specificEmployeeLoginArray[1])
+        employeeSurname = str(specificEmployeeLoginArray[2])
+        employeeRole = str(specificEmployeeDetailsArray[1])
+        descriptiveIntroduction = "Employee: " + employeeName + " "  + employeeSurname + " :: EmployeeID: " + EmployeeID
+        employeeSuperRate = specificEmployeeDetailsArray[2]
+        employeeHealthPlan = specificEmployeeDetailsArray[3]
+    # end if
+    for role in RolePayArray:
+        if employeeRole == str(role[0]):
+            hourlyPay = role[1]
+        # end if
+    # end for
+    ("1,Barista,4,15,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
+    hoursWorked = CalculateTotalHours(MondayHours=specificEmployeeDetailsArray[8],
+                                      TuesdayHours=specificEmployeeDetailsArray[9],
+                                      WednesdayHours=specificEmployeeDetailsArray[10],
+                                      ThursdayHours=specificEmployeeDetailsArray[11],
+                                      FridayHours=specificEmployeeDetailsArray[12],
+                                      SaturdayHours=specificEmployeeDetailsArray[13],
+                                      SundayHours=specificEmployeeDetailsArray[14])
+    basePay = CalculateBasePay(MondayHours=specificEmployeeDetailsArray[12],
+                               TuesdayHours=specificEmployeeDetailsArray[13],
+                               WednesdayHours=specificEmployeeDetailsArray[14],
+                               ThursdayHours=specificEmployeeDetailsArray[15],
+                               FridayHours=specificEmployeeDetailsArray[16],
+                               SaturdayHours=specificEmployeeDetailsArray[17],
+                               SundayHours=specificEmployeeDetailsArray[18],
+                               HourlyRate=hourlyPay)
+    publicHolidayOvertimeHours = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[8])
+    weekOvertimeHours = WeekOvertimeCalculator(MondayHours=specificEmployeeDetailsArray[8],
+                                               TuesdayHours=specificEmployeeDetailsArray[9],
+                                               WednesdayHours=specificEmployeeDetailsArray[10],
+                                               ThursdayHours=specificEmployeeDetailsArray[11],
+                                               FridayHours=specificEmployeeDetailsArray[12],
+                                               SaturdayHours=specificEmployeeDetailsArray[13],
+                                               SundayHours=specificEmployeeDetailsArray[14])
+    saturdayOvertime = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[13])
+    sundayOvertime = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[14])
+    overtimePay = CalculateOvertimePay(MondayHours=specificEmployeeDetailsArray[8],
+                                       TuesdayHours=specificEmployeeDetailsArray[9],
+                                       WednesdayHours=specificEmployeeDetailsArray[10],
+                                       ThursdayHours=specificEmployeeDetailsArray[11],
+                                       FridayHours=specificEmployeeDetailsArray[12],
+                                       SaturdayHours=specificEmployeeDetailsArray[13],
+                                       SundayHours=specificEmployeeDetailsArray[14],
+                                       HourlyRate=hourlyPay)
+    publicHolidayPay = CalculatePublicHolidayPay(specificEmployeeDetailsArray[8], hourlyPay)
+    grossPay = CalculateTotalPay(BasePay=basePay,
+                                 OvertimePay=overtimePay,
+                                 PublicHolidayHours=specificEmployeeDetailsArray[8],
+                                 SaturdayHours=specificEmployeeDetailsArray[13],
+                                 SundayHours=specificEmployeeDetailsArray[14])
+    tax = CalculateTax(GrossPay=grossPay, HourlyRate=hourlyPay, TaxRatesArray=TaxArray)
+    netPay = CalculateNetPay(GrossPay=grossPay,
+                             Tax=tax,
+                             SuperRate=specificEmployeeDetailsArray[2],
+                             HealthInsurnace=specificEmployeeDetailsArray[3])
+    Header("Interactive: Clerk", DescriptiveIntroduction)
+    print("|")
+    print("| Employee Given name:" + employeeName)
+    print("|")
+    print("| Employee surname:" + employeeSurname)
+    print("|")
+    print("| Role: " + employeeRole)
+    print("| Hourly rate: $" + employeeRole)
+    print("|")
+    print("| Monday: " + specificEmployeeDetailsArray[8])
+    print("| Tuesday: " + specificEmployeeDetailsArray[9])
+    print("| Wednesday: " + specificEmployeeDetailsArray[10])
+    print("| Thursday: " + specificEmployeeDetailsArray[11])
+    print("| Friday: " + specificEmployeeDetailsArray[12])
+    print("| Saturday: " + specificEmployeeDetailsArray[13])
+    print("| Sunday: " + specificEmployeeDetailsArray[14])
+    print("| Public holiday hours: " + specificEmployeeDetailsArray[8])
+    print("| Public holiday overtime hours: " + publicHolidayOvertimeHours)
+    print("| Total Overtime hours: " + weekOvertimeHours)
+    print("| Saturday overtime hours: " + saturdayOvertime)
+    print("| Sunday overtime hours: " + sundayOvertime)
+    print("|")
+    print("| Total hours worked: $" + hoursWorked)
+    print("|")
+    print("| Base pay: $" + basePay)
+    print("| Overtime pay: $" + overtimePay)
+    print("| Public holiday pay: $" + publicHolidayPay)
+    print("|")
+    print("| Gross pay: $" + grossPay)
+    print("| Superannuation deduction: " + employeeSuperRate + "%")
+    print("| Health insurance deduction: $" + employeeHealthPlan)
+    print("| Tax: $" + tax)
+    print("|")
+    print("| Net pay: $" + netPay)
+    print("|")
+    print("-----------------------------------------------------------")
+    print("")
+    returnSelection = input("Enter anything to return: ")
+    return True
+
 # def Display_TestMode(FileToBeRead):
 #     DataArray = []
 #     ##ReadIn FileToBeRead to DataArray
@@ -1030,7 +1225,7 @@ if file_exists("EmployeeFile.csv") == False:
     print("CREATED FILE: EmployeeFile")
     f.close()
 else:
-    employeeFileArray = readCSVto2DArray('EmployeeFile.csv')
+    EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
 
 
 # ======================================================================================================================
@@ -1056,7 +1251,7 @@ while display_Navigation_Loop == False:
         print(taxRatesArray)
         print(healthInsuranceArray)
         print(rolePaymentArray)
-        print(employeeFileArray)
+        print(EmployeeDetailsArray)
         # Display_TestMode(FileToBeRead)
     else:
         clearconsole()
@@ -1079,10 +1274,10 @@ while display_Navigation_Loop == False:
         else:
             clearconsole()
             employeeID = loginOutput
-            specificEmployeeArray = employeeFileArray[FindCurrentEmployee(loginOutput, employeeFileArray)]
+            specificEmployeeArray = EmployeeDetailsArray[FindCurrentEmployee(loginOutput, EmployeeDetailsArray)]
             while display_InteractiveClockIn_Return == False:
                 employeeIDArrayPlacement = int(employeeID) - 1
-                if employeeFileArray[employeeIDArrayPlacement][1] != 'Clerk':
+                if EmployeeDetailsArray[employeeIDArrayPlacement][1] != 'Clerk':
                     if Display_InteractiveClockIn(EmployeeID=employeeID, EmployeeArray=specificEmployeeArray,
                                                   LoginArray=employeeLoginArray) == True:
                         clearconsole()
