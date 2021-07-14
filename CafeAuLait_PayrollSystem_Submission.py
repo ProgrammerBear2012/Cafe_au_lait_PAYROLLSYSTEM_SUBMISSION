@@ -17,17 +17,12 @@ import time
 #                                                 TO-BE COMPLETED FUNCTIONS                                            #
 # ======================================================================================================================
 
-def RandomGenerateEmployeeID():
-    print("TBA")
-
+def GenerateEmployeeID(EmployeeLoginArray):
+    newEmployeeID = int(ArrayLengthCalculator(EmployeeLoginArray)) + 1
+    return newEmployeeID
 
 def RandomGenerateEmployeePass():
     print("TBA")
-
-
-def ValidateRole(EmployeeRole):
-    print("TBA")
-
 
 def ArrayValidationAndDeletion(SpecificValueToBeDeleted, Array):
     print("TBA")
@@ -202,7 +197,6 @@ def convertListTo2DArray(list_of_lists):
     for list in list_of_lists:
         arrayLength = arrayLength + 1
     # end for
-
     for list in list_of_lists:
         for item in list:
             subArrayLength = subArrayLength + 1
@@ -252,10 +246,10 @@ def readCSVto2DArray(filename):
 def FindCurrentEmployee(EmployeeID, array):
     arrayCounter = 0
     for employees in array:
-        if employees[0] != EmployeeID:
+        if employees[0] != str(EmployeeID):
             arrayCounter = arrayCounter + 1
         else:
-            return arrayCounter
+            return True
         # end if
     return False
     # end for
@@ -282,6 +276,16 @@ def TimeChecker(time):
     else:
         return True
     # end if
+# end def
+
+def ValidateRole(EmployeeRole, RolePayArray):
+    for role in RolePayArray:
+        if EmployeeRole.lower() == str(role[0][0]).lower():
+            return str(role)
+        else:
+            return False
+        # end if
+    # end for
 # end def
 
 # ======================================================================================================================
@@ -478,10 +482,11 @@ def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
     employeeFirstName = LoginArray[int(EmployeeID)][1]
     employeeLastName = LoginArray[int(EmployeeID)][2]
     status = None
-    if CurrentEmployeeArray[4] == False:
+    if CurrentEmployeeArray[4] == True:
         status = 'Shift in progress'
     else:
         status = 'Not on shift'
+    # end if
     Header("Interactive: Employee", "Have a good day employee: " + employeeFirstName + " " + employeeLastName)
     print("| ")
     print("| Status: " + status)
@@ -500,108 +505,127 @@ def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
         print("| Hours:  " + TimeCalculator(CurrentEmployeeArray[6], CurrentEmployeeArray[7]))
         print("| ")
         print("-----------------------------------------------------------")
+    # end if
+# end def
 
-
-def Display_ClerkOptions(EmployeeID):
-    Header("Interactive: Clerk", "Welcome Clerk" + EmployeeID)
+def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, EmployeeDetailsArray):
+    specificEmployee = int(EmployeeID) - 1
+    employeeFirstName = EmployeeNameArray[specificEmployee][1]
+    employeeLastName = EmployeeNameArray[specificEmployee][2]
+    ClerkSelection = ''
+    Header("Interactive: Clerk", "Welcome Clerk: " + employeeFirstName + " " + employeeLastName)
     print("| ")
     print("| [P]ayment / [F]inancial / [E]mployee options(default)")
-    input(ClerkSelection)
+    ClerkSelection = input("| User input:")
     print("| ")
-    Footer(Display_InteractiveLogin(EmployeeFileArray))
-    if Footer(Display_InteractiveLogin(EmployeeFileArray)) == 'C':
-        if ClerkSelection == P:
-            Display_ClerkPaymentOptions(EmployeeID)
-        elif ClerkSelection == F:
-            Display_ClerkFinancialOptions(EmployeeID)
+    if Footer() == True:
+        if ClerkSelection.lower() == 'p':
+            Display_ClerkPaymentOptions(ClerkID=EmployeeID, EmployeeLoginArray=EmployeeLoginArray,
+                                        EmployeeDetailsArray=EmployeeDetailsArray)
+        elif ClerkSelection.lower() == 'f':
+            print("ClerkFinancialOptions")
+            # Display_ClerkFinancialOptions(EmployeeID)
         else:
-            Display_ClerkEmployeeOptions(EmployeeID)
+            Display_ClerkEmployeeOptions(ClerkID=EmployeeID)
+        # end if
+    # end if
+# end def
 
-#
-# def Display_ClerkPaymentOptions(EmployeeFileArray, ClerkID):
-#     Header("Interactive: Clerk", "Payment")
-#     print("| ")
-#     print("| Enter employee ID")
-#     print("| ")
-#     print("| Employee - ID:")
-#     input(EmployeeID)
-#     print("| ")
-#     Footer(Display_ClerkOptions(ClerkID))
-#     if Footer(Display_ClerkOptions(ClerkID)) == 'C':
-#         # Repeat loop
-#         FindCurrentEmployee(EmployeeID)
-#         if FindCurrentEmployee(EmployeeID) == 'Not found':
-#             print("ERROR! Invalid employee")
-#             print("Please input a valid employee ID")
-#             input(EmployeeID)
-#         # Repeat loop condition: Until(FindCurrentEmployee(EmployeeID) != 'Not found')
-#
-#
-# def Display_ClerkEmployeeOptions(ClerkID):
-#     Header("Interactive: Clerk", "Employee Options")
-#     print("| ")
-#     print("| [A]dd / [R]emove / [E]dit Employee(default)")
-#     input(ClerkSelection)
-#     print("| ")
-#     Footer(Display_ClerkOptions(EmployeeID))
-#     if Display_ClerkOptions(EmployeeID) == 'C':
-#         if ClerkSelection == 'A':
-#             Display_AddEmployee(ClerkID)
-#         elif ClerkSelection == 'R':
-#             Display_RemoveEmployee()
-#         else:
-#             Display_EditEmployee()
-#
-#
-# def Display_AddEmployee(RolePaymentArray, ClerkID, EmployeeFileArray):
-#     NewEmployeeHourlyRate = 0
-#     Header("Interactive: Clerk", "Add Employee")
-#     print("| ")
-#     print("| Enter employee's details")
-#     print("| ")
-#     print("Given Name: ")
-#     input(EmployeeGivenName)
-#     print("| ")
-#     print("Surname: ")
-#     input(EmployeeSurname)
-#     print("| ")
-#     print("Role: [B]arista / [M]anager / [C]lerk")
-#     input(EmployeeRole)
-#     print("| ")
-#     print("Superannuation: [1]4 % / [2]6 % / [3]8 % (default)")
-#     input(EmployeeSuperannuation)
-#     print("| ")
-#     print("HealthInsurance:")
-#     print("[A]ncillery / [SU]perior / [ST]andard(default)")
-#     input(EmployeeHealthInsurance)
-#     print("| ")
-#     Footer(Display_EmployeeOptions)
-#     if Footer(Display_EmployeeOptions) == 'C':
-#         # Repeat loop
-#         ValidateRole(EmployeeRole)
-#         if ValidateRole == False:
-#             print("ERROR INVALID ROLE")
-#             print("Please input valid role: ")
-#             input(EmployeeRole)
-#         # Repeat loop condition: Until(ValidateRole== 'Barista' OR 'Manager' OR 'Clerk')
-#         NewEmployeeHourlyRate = FindPaymentForRole(EmployeeRole)
-#         NewEmployeeID = RandomGenerateEmployeeID()
-#         NewEmployeePass = RandomGenerateEmployeePass()
-#         EmployeeFileArray.append(NewEmployeeID)
-#         NewEmployeeArray = [NewEmployeeID, NewEmployeePass, EmployeeGivenName,
-#                             EmployeeSurname, EmployeeRole, NewEmployeeHourlyRate,
-#                             EmployeeSuperannuation, EmployeeHealthInsurance,
-#                             Finished, 0000, 0000, Monday, 0, 0, 0, 0, 0, 0, 0]
-#         print("-----------------------------------------------------------")
-#         print("| ")
-#         print("| Generated Employee ID: " + NewEmployeeID)
-#         print("| ")
-#         print("| Generated Employee Password: " + NewEmployeePass)
-#         print("| ")
-#         print("-----------------------------------------------------------")
-#         Display_ClerkOptions(EmployeeID)
-#
-#
+def Display_ClerkPaymentOptions(ClerkID, EmployeeLoginArray, EmployeeDetailsArray):
+    clerkPaymentEmployeeID = ''
+    employeeFound = False
+    Header("Interactive: Clerk", "Payment")
+    print("| ")
+    if Footer() == True:
+        while employeeFound == False:
+            clerkPaymentEmployeeID = input("| Enter employee ID: ")
+            print("| ")
+            if FindCurrentEmployee(clerkPaymentEmployeeID, EmployeeLoginArray) == False:
+                print("ERROR! Invalid employee")
+                print("Please input a valid employee ID")
+            else:
+                employeeFound = True
+            # end if
+        # end while
+    # end if
+# end def
+
+def Display_ClerkEmployeeOptions(ClerkID):
+    clerkSelection = ''
+    Header("Interactive: Clerk", "Employee Options")
+    print("| ")
+    clerkSelection = input("| [A]dd / [R]emove / [E]dit Employee(default): ")
+    print("| ")
+    if Footer() == True:
+        if clerkSelection.lower() == 'a':
+            print("Add Employee")
+            # Display_AddEmployee(ClerkID)
+        elif clerkSelection.lower() == 'r':
+            print("remove employee")
+            # Display_RemoveEmployee()
+        else:
+            print("edit Employee")
+            # Display_EditEmployee()
+        # end if
+    # end if
+# end def
+
+
+def Display_AddEmployee(ClerkID, RolePaymentArray, EmployeeDetailsArray):
+    newEmployeeID = ''
+    newEmployeePass = ''
+    newEmployeeHourlyRate = 0
+    employeeGivenName = ''
+    employeeSurname = ''
+    employeeRole = ''
+    employeeSuperannuation = ''
+    employeeHealthInsurance = ''
+    employeeRoleValidation = False
+    Header("Interactive: Clerk", "Add Employee")
+    print("| ")
+    print("| Enter employee's details")
+    print("| ")
+    employeeGivenName = input("Given Name: ")
+    print("| ")
+    employeeSurname = input("Surname: ")
+    print("| ")
+    print("| Role: ")
+    employeeRole = input("| [M]anager / [C]lerk / [B]arista (default) :: ")
+    print("| ")
+    print("| Superannuation: ")
+    employeeSuperannuation = input("| [1]4 % / [2]6 % / [3]8 % (default) :: ")
+    print("| ")
+    print("| HealthInsurance:")
+    employeeHealthInsurance = print("| [A]ncillery / [SU]perior / [ST]andard(default) :: ")
+    print("| ")
+    Footer()
+    if Footer() == True:
+        while employeeRoleValidation == False:
+            employeeRole = ValidateRole(employeeRole)
+            if employeeRole == False:
+                print("ERROR INVALID ROLE")
+                print("Please input valid role: ")
+                employeeRole = input("| [M]anager / [C]lerk / [B]arista (default) :: ")
+            else:
+                employeeRoleValidation = True
+        newEmployeeHourlyRate = FindPaymentForRole(EmployeeRole)
+        newEmployeeID = GenerateEmployeeID()
+        newEmployeePass = RandomGenerateEmployeePass()
+        # EmployeeFileArray.append(NewEmployeeID)
+        # NewEmployeeArray = [NewEmployeeID, NewEmployeePass, EmployeeGivenName,
+        #                     EmployeeSurname, EmployeeRole, NewEmployeeHourlyRate,     ### FIX OUTPUT TO FILE
+        #                     EmployeeSuperannuation, EmployeeHealthInsurance,
+        #                     Finished, 0000, 0000, Monday, 0, 0, 0, 0, 0, 0, 0]
+        print("-----------------------------------------------------------")
+        print("| ")
+        print("| Generated Employee ID: " + NewEmployeeID)
+        print("| ")
+        print("| Generated Employee Password: " + NewEmployeePass)
+        print("| ")
+        print("-----------------------------------------------------------")
+        Display_ClerkOptions(EmployeeID)
+
+
 # def Display_RemoveEmployee(EmployeeArrayFile):
 #     EmployeetoDelete = ""
 #     Header("Interactive: Clerk", "Remove Employee")
@@ -934,9 +958,9 @@ if file_exists("EmployeeLoginDetails.csv") == False:
     f.write("\n")
     f.write("2,Timmy,Tom,EmployeePass456")
     f.write("\n")
-    f.write("3,Charlie,Chaplin,ManagerPass123")
+    f.write("3,Charlie,Chaplin,ClerkPass432")
     f.write("\n")
-    f.write("4,Telina,Swarez,ClerkPass432")
+    f.write("4,Telina,Swarez,ManagerPass123")
     f.write("\n")
     print("CREATED FILE: EmployeeLoginDetails")
     f.close()
@@ -1020,6 +1044,8 @@ confirmation = False
 display_Navigation_Loop = False
 display_InteractiveClockIn_Return = False
 loginOutput = None
+employeeID = '0'
+employeeIDArrayPlacement = 0
 
 while display_Navigation_Loop == False:
     if Display_Navigation() == 't':
@@ -1052,17 +1078,22 @@ while display_Navigation_Loop == False:
             exit()
         else:
             clearconsole()
+            employeeID = loginOutput
             specificEmployeeArray = employeeFileArray[FindCurrentEmployee(loginOutput, employeeFileArray)]
             while display_InteractiveClockIn_Return == False:
-                if Display_InteractiveClockIn(EmployeeID=loginOutput, EmployeeArray=specificEmployeeArray,
-                                              LoginArray=employeeLoginArray) == True:
-                    clearconsole()
-                    Display_Clockin(EmployeeID=loginOutput,CurrentEmployeeArray=specificEmployeeArray,
-                                    LoginArray=employeeLoginArray)
-                    time.sleep(5)
-                    exit()
+                employeeIDArrayPlacement = int(employeeID) - 1
+                if employeeFileArray[employeeIDArrayPlacement][1] != 'Clerk':
+                    if Display_InteractiveClockIn(EmployeeID=employeeID, EmployeeArray=specificEmployeeArray,
+                                                  LoginArray=employeeLoginArray) == True:
+                        clearconsole()
+                        Display_Clockin(EmployeeID=employeeID,CurrentEmployeeArray=specificEmployeeArray,
+                                        LoginArray=employeeLoginArray)
+                        time.sleep(5)
+                        exit()
+                    else:
+                        display_InteractiveClockIn_Return == True
                 else:
-                    display_InteractiveClockIn_Return == True
+                    Display_ClerkOptions(EmployeeID=employeeID)
                 # end if
             # end while
         # end if
