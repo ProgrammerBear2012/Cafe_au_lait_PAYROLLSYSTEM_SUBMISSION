@@ -46,4 +46,23 @@ def GenerateEmployeePass(EmployeeLoginArray, Role):
 taxArray = [30, 40, 20]
 
 
-print(CalculateTax(23462.32, 40, taxArray))
+# print(CalculateTax(23462.32, 40, taxArray))
+
+def DoesItReTurnFalse():
+    string = "HelloTHEREE"
+    if string.isnumeric() == False:
+        return False
+    else:
+        return True
+
+DoesItReTurnFalse()
+
+
+loopCounter = 1
+HealthInsuranceprintString = ''
+
+for taxes in taxArray:
+    HealthInsuranceprintString = HealthInsuranceprintString + "[" + str(loopCounter) + "]" + "$" + str(taxArray[loopCounter-1]) + ", "
+    loopCounter = loopCounter + 1
+
+print(HealthInsuranceprintString)
