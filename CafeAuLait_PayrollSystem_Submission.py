@@ -723,7 +723,7 @@ def Display_ClerkPaymentOptions(EmployeeLoginArray, LoginFile):
     print("| ")
     if Footer() == True:
         while employeeFound == False:
-            if FindCurrentEmployee(EmployeeID=clerkPaymentEmployeeID, array=EmployeeLoginArray) == False:
+            if FindCurrentEmployee(EmployeeID=clerkPaymentEmployeeID, array=EmployeeLoginArray, file=LoginFile) == False:
                 print("ERROR! Invalid employee")
                 print("Please input a valid employee ID")
                 clerkPaymentEmployeeID = input("| Enter employee ID: ")
@@ -866,7 +866,7 @@ def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLog
     print("| ")
     if Footer() == True:
         while employeeFoundValidation == False:
-            if FindCurrentEmployee(EmployeeID=employeeIDtoRemove, array=EmployeeLoginArray) == 'False':
+            if FindCurrentEmployee(EmployeeID=employeeIDtoRemove, array=EmployeeLoginArray, file=EmployeeLoginFile) == 'False':
                 print("ERROR EMPLOYEE NOT FOUND!")
                 print(" ")
                 employeeIDtoRemove = input("| Enter Valid Employee: ")
@@ -945,7 +945,7 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
     print("| ")
     if Footer() == True:
         while employeeFoundValidation == False:
-            if FindCurrentEmployee(EmployeeID=employeeID, array=EmployeeLoginArray) == False:
+            if FindCurrentEmployee(EmployeeID=employeeID, array=EmployeeLoginArray, file=EmployeeLoginFile) == False:
                 print("ERROR: PLEASE DO NOT EDIT EMPLOYEE ID")
                 employeeID = input("| Café - Au - Lait - ID: ")
             else:
@@ -1359,7 +1359,7 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     employeeHealthPlan = 0
     employeeHealthDeduction = 0
     normalHours = 0
-    if FindCurrentEmployee(EmployeeID, EmployeeLoginArray) == True:
+    if FindCurrentEmployee(EmployeeID=EmployeeID, array=EmployeeLoginArray, file=EmployeeLoginFile) == True:
         specificEmployeeDetailsArray = EmployeeDetailsArray[employeeArrayPosition]
         specificEmployeeLoginArray = EmployeeLoginArray[employeeArrayPosition]
         employeeName = str(specificEmployeeLoginArray[1])
@@ -1456,8 +1456,8 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
                                  PublicHolidayHours=mondayHours,
                                  SaturdayHours=saturdayHours,
                                  SundayHours=sundayHours)
-    employeeSuperDeduction = grossPay * (employeeSuperRate/100)
-    tax = CalculateTax(GrossPay=float(grossPay-employeeSuperDeduction-employeeHealthPlan),
+    employeeSuperDeduction = grossPay * (int(employeeSuperRate)/100)
+    tax = CalculateTax(GrossPay=(float(grossPay)-float(employeeSuperDeduction)-float(employeeHealthPlan)),
                        HourlyRate=hourlyPay,
                        TaxRatesArray=TaxArray)
     netPay = CalculateNetPay(GrossPay=grossPay,
@@ -1472,7 +1472,7 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("| Employee surname:" + employeeSurname)
     print("|")
     print("| Role: " + employeeRole)
-    print("| Hourly rate: $" + employeeRole)
+    print("| Hourly rate: $" + hourlyPay)
     print("|")
     print("| Monday: " + str(mondayHours))
     print("| Tuesday: " + str(tuesdayHours))
@@ -1487,7 +1487,7 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("| Saturday overtime hours: " + str(saturdayOvertime))
     print("| Sunday overtime hours: " + str(sundayOvertime))
     print("|")
-    print("| Total hours worked: $" + str(hoursWorked))
+    print("| Total hours worked: " + str(hoursWorked))
     print("|")
     print("| Base pay: $" + str(basePay))
     print("| Overtime pay: $" + str(overtimePay))
@@ -1496,8 +1496,9 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("| Gross pay: $" + str(grossPay))
     print("| Superannuation deduction: " + str(employeeSuperRate) + "%")
     if float(netPay) < float(employeeHealthPlan):
-        netPay = netPay + int(employeeHealthPlan)
+        netPay = netPay + int(employeeHealthPlan) + float(tax)
         employeeHealthPlan = 0
+        tax = 0
     # end if
     print("| Health insurance deduction: $" + str(employeeHealthPlan))
     print("| Tax: $" + str(tax))
@@ -1658,6 +1659,8 @@ else:
 
 if file_exists("PaymentFile.csv") == False:
     f = open('PaymentFile.csv', 'a+')
+    f.write("ID,GNAME,SNAME,ROLE,TRATE,SUPER,HLTH,MON,TUE,WED,THU,FRI,SAT,SUN,NHRS,OHRS,GROSS,SDED,HDED,TAX,NETT")
+    f.write("\n")
     print("CREATED FILE: PaymentFile")
     f.close
 else:
@@ -1695,29 +1698,40 @@ while display_Navigation_Loop == False:
     display_Navigation_Loop == False
     if Display_Navigation() == 't':
         clearconsole()
-        print("")
-        print(employeeLoginArray)
-        print(superannuationArray)
-        print(taxRatesArray)
-        print(healthInsuranceArray)
-        print(rolePaymentArray)
-        print(EmployeeDetailsArray)
-        # Display_TestMode(FileToBeRead)
+        #VARIABLES
         fileFound = False
-        #tax array
+        # tax array
         sameTaxFound = False
         taxPos = 0
         taxFileSize = 0
         taxHolder = 0
         TestTaxArray = None
-        #login array
+        # login array
         TestLoginArray = None
+        testLoginArrayLength = 0
+        # employee details array
+        TestEmployeeDetailsArray = None
+        testEmployeeDetailsArrayLength = 0
+        # health array
+        TestHealthArray = None
+        testHealthArrayLength = 0
+        sameHealthFound = False
+        healthPos = 0
+        healthHolder = 0
+        # super array
+        TestSuperArray = None
+        testSuperArrayLength = 0
+        sameSuperFound = False
+        superPos = 0
+        superHolder = 0
         # other variables
         testWhileCounter = 0
         personFileLength = 0
         TestDetailsSubArray = [None]*15             # "4,Barista,8,25,False,MONDAY,0000,0000,0,0,0,0,0,0,0"
+        TestLoginSubArray = [None]*3
+        employeeIDCounter = 0
         while fileFound == False:
-            fileToBeRead = input("| Please input the name of the file to be read")
+            fileToBeRead = input("| Please input the name of the file to be read: ")
             if file_exists(str(fileToBeRead)) == True:
                 fileFound = True
             else:
@@ -1725,6 +1739,7 @@ while display_Navigation_Loop == False:
                 print("| ERROR: File could not be found")
                 print("|")
             # end if
+        # end while
         FileArray = readCSVto2DArray(str(fileToBeRead))
         personFileLength = ArrayLengthCalculator(FileArray)
         for item in FileArray:
@@ -1739,8 +1754,26 @@ while display_Navigation_Loop == False:
             if sameTaxFound == False:
                 taxFileSize = taxFileSize + 1
             # end if
+            for super in TestSuperArray:
+                if item[4] == super:
+                    sameSuperFound = True
+                # end if
+            # end for
+            if sameSuperFound == False:
+                testSuperArrayLength = testSuperArrayLength + 1
+            # end if
+            for health in TestHealthArray:
+                if item[5] == health:
+                    sameHealthFound = True
+                # end if
+            # end for
+            if sameHealthFound == False:
+                testHealthArrayLength = testHealthArrayLength + 1
+            # end if
         # end for
         TestTaxArray = [None]*taxFileSize
+        TestSuperArray = [None]*testSuperArrayLength
+        TestHealthArray = [None]*testHealthArrayLength
         for item in FileArray:
             for tax in TestTaxArray:
                 if item[3] == tax:
@@ -1754,12 +1787,66 @@ while display_Navigation_Loop == False:
             # end if
             taxPos = taxPos + 1
         # end for
-        for Item
+        for item in FileArray:
+            for super in TestSuperArray:
+                if item[4] == super:
+                    sameSuperFound = True
+                else:
+                    superHolder = item[4]
+                # end if
+            # end for
+            if sameSuperFound == False:
+                TestSuperArray[superPos] = superHolder
+            # end if
+            superPos = superPos + 1
+        # end for
+        for item in FileArray:
+            for health in TestHealthArray:
+                if item[5] == health:
+                    sameHealthFound = True
+                else:
+                    healthHolder = item[5]
+                # end if
+            # end for
+            if sameHealthFound == False:
+                TestHealthArray[healthPos] = healthHolder
+            # end if
+            healthPos = healthPos + 1
+        # end for
+        for item in FileArray:
+            loginArrayLength = loginGuesses + 1
+            testEmployeeDetailsArrayLength = testEmployeeDetailsArrayLength + 1
+        # end for
+        TestLoginArray = [None]*loginArrayLength
+        TestEmployeeDetailsArray = [None]*testEmployeeDetailsArrayLength
+        for item in FileArray:
+            TestLoginSubArray[0] = employeeIDCounter
+            TestLoginSubArray[1] = item[1]
+            TestLoginSubArray[2] = item[2]
+            TestDetailsSubArray[0] = employeeIDCounter
+            TestDetailsSubArray[1] = item[2]
+            TestDetailsSubArray[2] = item[4]
+            TestDetailsSubArray[3] = item[5]
+            TestDetailsSubArray[4] = False
+            TestDetailsSubArray[5] = 'MONDAY'
+            TestDetailsSubArray[6] = 0000
+            TestDetailsSubArray[7] = 0000
+            TestDetailsSubArray[8] = item[6]
+            TestDetailsSubArray[9] = item[7]
+            TestDetailsSubArray[10] = item[8]
+            TestDetailsSubArray[11] = item[9]
+            TestDetailsSubArray[12] = item[10]
+            TestDetailsSubArray[13] = item[11]
+            TestDetailsSubArray[14] = item[12]
+            TestLoginArray[employeeIDCounter] = TestLoginSubArray
+            TestEmployeeDetailsArray[employeeIDCounter] = TestDetailsSubArray
+            employeeIDCounter = employeeIDCounter + 1
+        # end for
         while testWhileCounter < personFileLength:
             Display_EmployeePaymentScreen(EmployeeID=int(testWhileCounter+1),
-                                          EmployeeDetailsArray=,
+                                          EmployeeDetailsArray=TestEmployeeDetailsArray,
                                           EmployeeDetailsFile=False,
-                                          EmployeeLoginArray=,
+                                          EmployeeLoginArray=TestLoginArray,
                                           EmployeeLoginFile=False,
                                           RolePayArray=rolePaymentArray,
                                           RolePayFile=False,
@@ -1769,7 +1856,8 @@ while display_Navigation_Loop == False:
                                           PaymentFile='PaymentFile.csv',
                                           TestingUse=True)
             testWhileCounter = testWhileCounter + 1
-
+        # end while
+        clearconsole()
     else:
         clearconsole()
         loginGuesses = 0
