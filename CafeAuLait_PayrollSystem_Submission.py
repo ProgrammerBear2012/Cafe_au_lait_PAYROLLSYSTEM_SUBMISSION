@@ -17,12 +17,6 @@ from random import randint
 #                                                 TO-BE COMPLETED FUNCTIONS                                            #
 # ======================================================================================================================
 
-def StoreData(DataArray):
-    print("TBA")
-
-def CalculateAndPrint(DataArray):
-    print("TBA")
-
 # ======================================================================================================================
 #                                                          ARRAYS                                                      #
 # ======================================================================================================================
@@ -180,7 +174,8 @@ def readCSVto2DArray(filename):
     return myRecord_Array
 # end def
 
-def FindCurrentEmployee(EmployeeID, array):
+def FindCurrentEmployee(EmployeeID, array, file):
+    array = readCSVto2DArray(file)
     arrayCounter = 0
     for employees in array:
         if employees[0] != str(EmployeeID):
@@ -288,14 +283,14 @@ def CalculateTax(GrossPay, HourlyRate, TaxRatesArray):
     totalTax = 0
     taxArray = sorted(TaxRatesArray)
     if HourlyRate < 30:
-        taxRate = TaxRatesArray[0]/100
+        taxRate = int(TaxRatesArray[0])/100
     elif HourlyRate < 60:
-        taxRate = TaxRatesArray[1]/100
+        taxRate = int(TaxRatesArray[1])/100
     else:
         if ArrayLengthCalculator(TaxRatesArray) > 2:
-            taxRate = TaxRatesArray[2]/100
+            taxRate = int(TaxRatesArray[2])/100
         else:
-            taxRate = TaxRatesArray[1]/100
+            taxRate = int(TaxRatesArray[1])/100
         # end if
     # end if
     totalTax = GrossPay*taxRate
@@ -524,7 +519,8 @@ def Display_Navigation():
     # end if
 # end def
 
-def Display_InteractiveLogin(array):
+def Display_InteractiveLogin(array, file):
+    array = readCSVto2DArray(file)
     EmployeeID = ''
     Password = ''
     Header(SystemHeader="Interactive: Log-in", HeaderMessage="Interactive mode selected")
@@ -545,7 +541,10 @@ def Display_InteractiveLogin(array):
     # end if
 # end def
 
-def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
+def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, EmployeeDetailsFile, LoginFile):
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
+    LoginArray = readCSVto2DArray(LoginFile)
+    EmployeeArray = EmployeeDetailsArray[int(EmployeeID)-1]
     timeStamp = 0000
     timeStampValidation = False
     daySelection = ""
@@ -553,8 +552,8 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
     clockSelection = ""
     clockSelectionValidation = False
     hoursWorked = 0
-    employeeFirstName = LoginArray[int(EmployeeID)][1]
-    employeeLastName = LoginArray[int(EmployeeID)][2]
+    employeeFirstName = LoginArray[int(EmployeeID-1)][1]
+    employeeLastName = LoginArray[int(EmployeeID-1)][2]
     EmployeeWelcome = "Welcome Employee: " + employeeFirstName + " " + employeeLastName
     Header(SystemHeader="Interactive: Employee", HeaderMessage=EmployeeWelcome)
     print("| ")
@@ -649,12 +648,17 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeArray, LoginArray):
                 EmployeeArray[14] = hoursWorked
             # end if
         # end if
+        EmployeeDetailsArray[int(EmployeeID)-1] = EmployeeArray
+        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
         return True
     # end if
     return False
 # end def
 
-def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
+def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
+    LoginArray = readCSVto2DArray(LoginFile)
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
+    CurrentEmployeeArray = EmployeeDetailsArray[int(employeeID)-1]
     employeeFirstName = LoginArray[int(EmployeeID)][1]
     employeeLastName = LoginArray[int(EmployeeID)][2]
     status = None
@@ -685,7 +689,9 @@ def Display_Clockin(EmployeeID, CurrentEmployeeArray, LoginArray):
     # end if
 # end def
 
-def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, EmployeeDetailsArray):
+def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, LoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
+    EmployeeLoginArray = readCSVto2DArray(LoginFile)
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     specificEmployee = int(EmployeeID) - 1
     employeeFirstName = EmployeeLoginArray[specificEmployee][1]
     employeeLastName = EmployeeLoginArray[specificEmployee][2]
@@ -707,27 +713,31 @@ def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, EmployeeDetailsArray):
     # end if
 # end def
 
-def Display_ClerkPaymentOptions(ClerkID, EmployeeLoginArray, EmployeeDetailsArray):
+def Display_ClerkPaymentOptions(EmployeeLoginArray, LoginFile):
+    EmployeeLoginArray = readCSVto2DArray(LoginFile)
     clerkPaymentEmployeeID = ''
     employeeFound = False
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Payment")
     print("| ")
+    clerkPaymentEmployeeID = input("| Enter employee ID: ")
+    print("| ")
     if Footer() == True:
         while employeeFound == False:
-            clerkPaymentEmployeeID = input("| Enter employee ID: ")
-            print("| ")
             if FindCurrentEmployee(EmployeeID=clerkPaymentEmployeeID, array=EmployeeLoginArray) == False:
                 print("ERROR! Invalid employee")
                 print("Please input a valid employee ID")
+                clerkPaymentEmployeeID = input("| Enter employee ID: ")
+                print("| ")
             else:
                 employeeFound = True
                 return clerkPaymentEmployeeID
             # end if
         # end while
     # end if
+    return False
 # end def
 
-def Display_ClerkEmployeeOptions(ClerkID):
+def Display_ClerkEmployeeOptions():
     clerkSelection = ''
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Employee Options")
     print("| ")
@@ -735,20 +745,20 @@ def Display_ClerkEmployeeOptions(ClerkID):
     print("| ")
     if Footer() == True:
         if clerkSelection.lower() == 'a':
-            print("Add Employee")
-            # Display_AddEmployee(ClerkID)
+            return 'Add'
         elif clerkSelection.lower() == 'r':
-            print("remove employee")
-            # Display_RemoveEmployee()
+            return 'Remove'
         else:
-            print("edit Employee")
-            # Display_EditEmployee()
+            return 'Edit'
         # end if
     # end if
+    return False
 # end def
 
 
-def Display_AddEmployee(EmployeeLoginArray):
+def Display_AddEmployee(EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     newEmployeeID = ''
     newEmployeePass = ''
     newEmployeeHourlyRate = 0
@@ -812,6 +822,10 @@ def Display_AddEmployee(EmployeeLoginArray):
         newEmployeeLoginArray[1] = employeeGivenName
         newEmployeeLoginArray[2] = employeeSurname
         newEmployeeLoginArray[3] = employeeRole
+        EmployeeLoginArray.append(newEmployeeLoginArray)
+        EmployeeDetailsArray.append(newEmployeeDetailsArray)
+        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)
+        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
         print("-----------------------------------------------------------")
         print("| ")
         print("| Generated Employee ID: " + newEmployeeID)
@@ -824,6 +838,8 @@ def Display_AddEmployee(EmployeeLoginArray):
 # end def
 
 def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsFile):
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     employeeIDtoRemove = ''
     clerkID = ''
     clerkPassword = ''
@@ -893,6 +909,8 @@ def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLog
 # end def
 
 def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLoginFile, EmployeeDetailsFile):
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     EmployeeArray = []
     employeeID = ''
     employeePassword = ''
@@ -951,7 +969,8 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
             # end if
         # end while
         while superValidation == False:
-            if str(employeeSuperannuation) != '1' and str(employeeSuperannuation) != '2' and str(employeeSuperannuation) != '3':
+            if str(employeeSuperannuation) != '1' and str(employeeSuperannuation) != '2' and \
+                    str(employeeSuperannuation) != '3':
                 print("ERROR: PLEASE INPUT A VALID SUPERANNUATION PLAN")
                 print("| Superannuation")
                 employeeSuperannuation = input("| [1]4% / [2]6% / [3]8%: ")
@@ -967,7 +986,8 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
             # end if
         # end while
         while employeeHealthInsurance == False:
-            if employeeHealthInsurance.lower() != 'a' and employeeHealthInsurance.lower() != 'st' and employeeHealthInsurance != 'su':
+            if employeeHealthInsurance.lower() != 'a' and employeeHealthInsurance.lower() != 'st' and \
+                    employeeHealthInsurance != 'su':
                 print("ERROR: PLEASE INPUT A VALID HEALTH INSURANCE PLAN")
                 print("| Health Insurance")
                 employeeHealthInsurance = input("| [A]ncillery / [SU]perior / [ST]andard(default): ")
@@ -992,7 +1012,7 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
     return True
 # end def
 
-def Display_FinancialOptions(EmployeeID):
+def Display_FinancialOptions():
     clerkFinancialOption = ''
     returnStatement = ''
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Financial Options")
@@ -1015,7 +1035,8 @@ def Display_FinancialOptions(EmployeeID):
     return False
 # end while
 
-def Display_Financial_TaxRates(TaxRateArray, EmployeeID, TaxRatesFile):
+def Display_Financial_TaxRates(TaxRateArray, TaxRatesFile):
+    TaxRateArray = readCSV2Array(TaxRatesFile)
     taxRateToBeAdded = 0
     taxRateToBeDeleted = 0
     deletionValidation = False
@@ -1025,7 +1046,8 @@ def Display_Financial_TaxRates(TaxRateArray, EmployeeID, TaxRatesFile):
     taxRatePrintStringEnd = ''
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Tax Adjustment")
     for item in TaxRateArray:
-        taxRatePrintStringEnd = taxRatePrintStringEnd + "[" + str(loopCounter) + "]" + TaxRateArray[loopCounter-1] + " % " + ", "
+        taxRatePrintStringEnd = taxRatePrintStringEnd + "[" + str(loopCounter) + "]" + TaxRateArray[loopCounter-1] + \
+                                " % " + ", "
         loopCounter = loopCounter + 1
     # end for
     print("| ")
@@ -1072,7 +1094,8 @@ def Display_Financial_TaxRates(TaxRateArray, EmployeeID, TaxRatesFile):
     return False
 # end def
 
-def Display_Financial_Superannuation(SuperArray, EmployeeID, SuperFile):
+def Display_Financial_Superannuation(SuperArray, SuperFile):
+    SuperArray = readCSV2Array(SuperFile)
     loopCounter = 0
     superprintStringBegin = " | Superannuation: "
     superprintStringEnd = ""
@@ -1132,7 +1155,8 @@ def Display_Financial_Superannuation(SuperArray, EmployeeID, SuperFile):
     # end if
     return False
 
-def Display_Financial_HealthInsurance(HealthInsuranceArray, EmployeeID, HealthFile):
+def Display_Financial_HealthInsurance(HealthInsuranceArray, HealthFile):
+    HealthInsuranceArray = readCSV2Array(HealthFile)
     healthInsuranceprintStringBegin = " | Health Insurance Deductions: "
     healthInsuranceprintStringEnd = ""
     healthInsuranceToBeDeleted = ''
@@ -1191,8 +1215,11 @@ def Display_Financial_HealthInsurance(HealthInsuranceArray, EmployeeID, HealthFi
         # end while
         return True
     return False
+    # end if
+# end def
 
-def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, RolePayFile):
+def Display_Financial_PayRates(RolePaymentArray, RolePayFile):
+    RolePaymentArray = readCSVto2DArray(RolePayFile)
     loopCounter = 1
     rolePaymentprintStringBegin = " | Roles: "
     rolePaymentprintStringEnd = ""
@@ -1205,8 +1232,9 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
     deletionValidation = False
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Payrates Adjustment")
     for role in RolePaymentArray:
-        rolePaymentprintStringEnd = rolePaymentprintStringEnd + "[" + str(loopCounter) + "]" + \
-                                    RoleNameArray[loopCounter-1] + "($" + RolePaymentArray[loopCounter-1] + " / hour), "
+        rolePaymentprintStringEnd = rolePaymentprintStringEnd + "[" + str(loopCounter) + "] " + \
+                                    str(RolePaymentArray[loopCounter-1][0]) + " ($" +\
+                                    str(RolePaymentArray[loopCounter-1][1]) + " / hour), "
         loopCounter = loopCounter + 1
     # Repeat loop condition: Until(loopCounter==loopCalculator)
     print("|")
@@ -1218,7 +1246,7 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
     print("| Add Role: // Enter the name or use 'next' to skip")
     roleToBeAdded = input("| :: ")
     print("|")
-    print("| Add Payrate: // Enter the payrate to correlate with the new role, if you have skipped"
+    print("| Add Payrate: // Enter the payrate to correlate with the new role, if you have skipped "
           "the add role option please do not add a payrate, to skip type 'next'")
     payRateToBeAdded = input("| :: ")
     print("")
@@ -1229,7 +1257,7 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
                     print("ERROR: MISMATCH, there is not a corresponding payrate to the role or vice versa.")
                     print("| Add Role: // Enter the name or use 'next' to skip")
                     roleToBeAdded = input("| :: ")
-                    print("| Add Payrate: // Enter the payrate to correlate with the new role, if you have skipped"
+                    print("| Add Payrate: // Enter the payrate to correlate with the new role, if you have skipped "
                           "the add role option please do not add a payrate, to skip type 'next'")
                     payRateToBeAdded = input("| :: ")
                 else:
@@ -1240,6 +1268,9 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
                                 print("ERROR INVALID ROLE: NOT ON Array")
                                 roleToBeDeleted = input("Please input a valid role to be deleted: ")
                             else:
+                                print("|")
+                                print("| ROLE: " + str(roleToBeDeleted) + " was deleted")
+                                print("|")
                                 deletionValidation = True
                             # end if
                         # end while
@@ -1258,6 +1289,9 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
                         print("ERROR INVALID ROLE: NOT ON Array")
                         roleToBeDeleted = input("Please input a valid role to be deleted: ")
                     else:
+                        print("|")
+                        print("| ROLE: " + str(roleToBeDeleted) + " was deleted")
+                        print("|")
                         deletionValidation = True
                     # end if
                 # end while
@@ -1273,6 +1307,9 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
                         time.sleep(2)
                         exit()
                     else:
+                        print("|")
+                        print("| ROLE: " + str(roleToBeAddedArray[0]) + " was added, paying $" +
+                              str(roleToBeAddedArray[1]) + " an hour")
                         return True
                     # end if
                 # end while
@@ -1280,7 +1317,23 @@ def Display_Financial_PayRates(RolePaymentArray, RoleNameArray, EmployeeID, Role
         # end while
     return False
 
-def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeLoginArray, RolePayArray, TaxArray):
+def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDetailsFile, EmployeeLoginArray,
+                                  EmployeeLoginFile, RolePayArray, RolePayFile, TaxArray, TaxFile, PaymentArray,
+                                  PaymentFile, TestingUse):
+    if TestingUse == False:
+        EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+        EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
+        PaymentArray = readCSVto2DArray(PaymentFile)
+        RolePayFile = readCSVto2DArray(RolePayFile)
+        TaxFile = readCSV2Array(TaxFile)
+    outputPaymentArray = [None]*21
+    mondayHours = 0
+    tuesdayHours = 0
+    wednesdayHours = 0
+    thursdayHours = 0
+    fridayHours = 0
+    saturdayHours = 0
+    sundayHours = 0
     specificEmployeeDetailsArray = ''
     specificEmployeeLoginArray = ''
     employeeArrayPosition = int(EmployeeID) - 1
@@ -1298,10 +1351,14 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeLogi
     overtimePay = 0
     publicHolidayPay = 0
     grossPay = 0
+    taxRate = 0
     tax = 0
     netPay = 0
     employeeSuperRate = 0
+    employeeSuperDeduction = 0
     employeeHealthPlan = 0
+    employeeHealthDeduction = 0
+    normalHours = 0
     if FindCurrentEmployee(EmployeeID, EmployeeLoginArray) == True:
         specificEmployeeDetailsArray = EmployeeDetailsArray[employeeArrayPosition]
         specificEmployeeLoginArray = EmployeeLoginArray[employeeArrayPosition]
@@ -1312,55 +1369,102 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeLogi
         employeeSuperRate = specificEmployeeDetailsArray[2]
         employeeHealthPlan = specificEmployeeDetailsArray[3]
     # end if
+    mondayHours = float(specificEmployeeDetailsArray[8])
+    tuesdayHours = float(specificEmployeeDetailsArray[9])
+    wednesdayHours = float(specificEmployeeDetailsArray[10])
+    thursdayHours = float(specificEmployeeDetailsArray[11])
+    fridayHours = float(specificEmployeeDetailsArray[12])
+    saturdayHours = float(specificEmployeeDetailsArray[13])
+    sundayHours = float(specificEmployeeDetailsArray[14])
+    if mondayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + mondayHours
+    # end if
+    if tuesdayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + tuesdayHours
+    # end if
+    if wednesdayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + wednesdayHours
+    # end if
+    if thursdayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + thursdayHours
+    # end if
+    if fridayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + fridayHours
+    # end if
+    if saturdayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + saturdayHours
+    # end if
+    if sundayHours > 8:
+        normalHours = normalHours + 8
+    else:
+        normalHours = normalHours + sundayHours
+    # end if
     for role in RolePayArray:
         if employeeRole == str(role[0]):
-            hourlyPay = role[1]
+            hourlyPay = int(role[1])
         # end if
     # end for
-    hoursWorked = CalculateTotalHours(MondayHours=specificEmployeeDetailsArray[8],
-                                      TuesdayHours=specificEmployeeDetailsArray[9],
-                                      WednesdayHours=specificEmployeeDetailsArray[10],
-                                      ThursdayHours=specificEmployeeDetailsArray[11],
-                                      FridayHours=specificEmployeeDetailsArray[12],
-                                      SaturdayHours=specificEmployeeDetailsArray[13],
-                                      SundayHours=specificEmployeeDetailsArray[14])
-    basePay = CalculateBasePay(MondayHours=specificEmployeeDetailsArray[12],
-                               TuesdayHours=specificEmployeeDetailsArray[13],
-                               WednesdayHours=specificEmployeeDetailsArray[14],
-                               ThursdayHours=specificEmployeeDetailsArray[15],
-                               FridayHours=specificEmployeeDetailsArray[16],
-                               SaturdayHours=specificEmployeeDetailsArray[17],
-                               SundayHours=specificEmployeeDetailsArray[18],
+    hoursWorked = CalculateTotalHours(MondayHours=mondayHours,
+                                      TuesdayHours=tuesdayHours,
+                                      WednesdayHours=wednesdayHours,
+                                      ThursdayHours=thursdayHours,
+                                      FridayHours=fridayHours,
+                                      SaturdayHours=saturdayHours,
+                                      SundayHours=sundayHours)
+    basePay = CalculateBasePay(MondayHours=mondayHours,
+                               TuesdayHours=tuesdayHours,
+                               WednesdayHours=wednesdayHours,
+                               ThursdayHours=thursdayHours,
+                               FridayHours=fridayHours,
+                               SaturdayHours=saturdayHours,
+                               SundayHours=sundayHours,
                                HourlyRate=hourlyPay)
-    publicHolidayOvertimeHours = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[8])
-    weekOvertimeHours = WeekOvertimeCalculator(MondayHours=specificEmployeeDetailsArray[8],
-                                               TuesdayHours=specificEmployeeDetailsArray[9],
-                                               WednesdayHours=specificEmployeeDetailsArray[10],
-                                               ThursdayHours=specificEmployeeDetailsArray[11],
-                                               FridayHours=specificEmployeeDetailsArray[12],
-                                               SaturdayHours=specificEmployeeDetailsArray[13],
-                                               SundayHours=specificEmployeeDetailsArray[14])
-    saturdayOvertime = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[13])
-    sundayOvertime = OvertimeCalculator(DayHours=specificEmployeeDetailsArray[14])
-    overtimePay = CalculateOvertimePay(MondayHours=specificEmployeeDetailsArray[8],
-                                       TuesdayHours=specificEmployeeDetailsArray[9],
-                                       WednesdayHours=specificEmployeeDetailsArray[10],
-                                       ThursdayHours=specificEmployeeDetailsArray[11],
-                                       FridayHours=specificEmployeeDetailsArray[12],
-                                       SaturdayHours=specificEmployeeDetailsArray[13],
-                                       SundayHours=specificEmployeeDetailsArray[14],
+
+    publicHolidayOvertimeHours = OvertimeCalculator(DayHours=mondayHours)
+    weekOvertimeHours = WeekOvertimeCalculator(MondayHours=mondayHours,
+                                               TuesdayHours=tuesdayHours,
+                                               WednesdayHours=wednesdayHours,
+                                               ThursdayHours=thursdayHours,
+                                               FridayHours=fridayHours,
+                                               SaturdayHours=saturdayHours,
+                                               SundayHours=sundayHours)
+    saturdayOvertime = OvertimeCalculator(DayHours=saturdayHours)
+    sundayOvertime = OvertimeCalculator(DayHours=sundayHours)
+    overtimePay = CalculateOvertimePay(MondayHours=mondayHours,
+                                       TuesdayHours=tuesdayHours,
+                                       WednesdayHours=wednesdayHours,
+                                       ThursdayHours=thursdayHours,
+                                       FridayHours=fridayHours,
+                                       SaturdayHours=saturdayHours,
+                                       SundayHours=sundayHours,
                                        HourlyRate=hourlyPay)
-    publicHolidayPay = CalculatePublicHolidayPay(specificEmployeeDetailsArray[8], hourlyPay)
+    publicHolidayPay = CalculatePublicHolidayPay(mondayHours, hourlyPay)
     grossPay = CalculateTotalPay(BasePay=basePay,
                                  OvertimePay=overtimePay,
-                                 PublicHolidayHours=specificEmployeeDetailsArray[8],
-                                 SaturdayHours=specificEmployeeDetailsArray[13],
-                                 SundayHours=specificEmployeeDetailsArray[14])
-    tax = CalculateTax(GrossPay=grossPay, HourlyRate=hourlyPay, TaxRatesArray=TaxArray)
+                                 PublicHolidayHours=mondayHours,
+                                 SaturdayHours=saturdayHours,
+                                 SundayHours=sundayHours)
+    employeeSuperDeduction = grossPay * (employeeSuperRate/100)
+    tax = CalculateTax(GrossPay=float(grossPay-employeeSuperDeduction-employeeHealthPlan),
+                       HourlyRate=hourlyPay,
+                       TaxRatesArray=TaxArray)
     netPay = CalculateNetPay(GrossPay=grossPay,
                              Tax=tax,
-                             SuperRate=specificEmployeeDetailsArray[2],
-                             HealthInsurnace=specificEmployeeDetailsArray[3])
+                             SuperRate=int(specificEmployeeDetailsArray[2]),
+                             HealthInsurnace=int(specificEmployeeDetailsArray[3]))
+    clearconsole()
     Header(SystemHeader="Interactive: Clerk", HeaderMessage=descriptiveIntroduction)
     print("|")
     print("| Employee Given name:" + employeeName)
@@ -1370,36 +1474,86 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeLogi
     print("| Role: " + employeeRole)
     print("| Hourly rate: $" + employeeRole)
     print("|")
-    print("| Monday: " + specificEmployeeDetailsArray[8])
-    print("| Tuesday: " + specificEmployeeDetailsArray[9])
-    print("| Wednesday: " + specificEmployeeDetailsArray[10])
-    print("| Thursday: " + specificEmployeeDetailsArray[11])
-    print("| Friday: " + specificEmployeeDetailsArray[12])
-    print("| Saturday: " + specificEmployeeDetailsArray[13])
-    print("| Sunday: " + specificEmployeeDetailsArray[14])
-    print("| Public holiday hours: " + specificEmployeeDetailsArray[8])
-    print("| Public holiday overtime hours: " + publicHolidayOvertimeHours)
-    print("| Total Overtime hours: " + weekOvertimeHours)
-    print("| Saturday overtime hours: " + saturdayOvertime)
-    print("| Sunday overtime hours: " + sundayOvertime)
+    print("| Monday: " + str(mondayHours))
+    print("| Tuesday: " + str(tuesdayHours))
+    print("| Wednesday: " + str(wednesdayHours))
+    print("| Thursday: " + str(thursdayHours))
+    print("| Friday: " + str(fridayHours))
+    print("| Saturday: " + str(saturdayHours))
+    print("| Sunday: " + str(sundayHours))
+    print("| Public holiday hours: " + str(mondayHours))
+    print("| Public holiday overtime hours: " + str(publicHolidayOvertimeHours))
+    print("| Total Overtime hours: " + str(weekOvertimeHours))
+    print("| Saturday overtime hours: " + str(saturdayOvertime))
+    print("| Sunday overtime hours: " + str(sundayOvertime))
     print("|")
-    print("| Total hours worked: $" + hoursWorked)
+    print("| Total hours worked: $" + str(hoursWorked))
     print("|")
-    print("| Base pay: $" + basePay)
-    print("| Overtime pay: $" + overtimePay)
-    print("| Public holiday pay: $" + publicHolidayPay)
+    print("| Base pay: $" + str(basePay))
+    print("| Overtime pay: $" + str(overtimePay))
+    print("| Public holiday pay: $" + str(publicHolidayPay))
     print("|")
-    print("| Gross pay: $" + grossPay)
-    print("| Superannuation deduction: " + employeeSuperRate + "%")
-    print("| Health insurance deduction: $" + employeeHealthPlan)
-    print("| Tax: $" + tax)
+    print("| Gross pay: $" + str(grossPay))
+    print("| Superannuation deduction: " + str(employeeSuperRate) + "%")
+    if float(netPay) < float(employeeHealthPlan):
+        netPay = netPay + int(employeeHealthPlan)
+        employeeHealthPlan = 0
+    # end if
+    print("| Health insurance deduction: $" + str(employeeHealthPlan))
+    print("| Tax: $" + str(tax))
     print("|")
-    print("| Net pay: $" + netPay)
+    print("| Net pay: $" + str(netPay))
     print("|")
     print("-----------------------------------------------------------")
     print("")
-    returnSelection = input("Enter anything to return: ")
-    return True
+    if hourlyPay < 30:
+        taxRate = taxRatesArray[0]
+    else:
+        taxRate = taxRatesArray[1]
+    # end if
+    if employeeHealthPlan == 0:
+        employeeHealthPlan = 'Unpaid'
+        employeeHealthDeduction = 0
+    elif employeeHealthPlan == 15:
+        employeeHealthPlan = 'Ancillery'
+        employeeHealthDeduction = 15
+    elif employeeHealthPlan == 25:
+        employeeHealthPlan = 'Standard'
+        employeeHealthDeduction = 25
+    else:
+        employeeHealthPlan = 'Superior'
+        employeeHealthDeduction = 45
+    # end if
+    if TestingUse == False:
+        outputPaymentArray[0] = EmployeeID
+        outputPaymentArray[1] = employeeName
+        outputPaymentArray[2] = employeeSurname
+        outputPaymentArray[3] = employeeRole
+        outputPaymentArray[4] = taxRate
+        outputPaymentArray[5] = employeeSuperRate
+        outputPaymentArray[6] = employeeHealthPlan
+        outputPaymentArray[7] = mondayHours
+        outputPaymentArray[8] = tuesdayHours
+        outputPaymentArray[9] = wednesdayHours
+        outputPaymentArray[10] = thursdayHours
+        outputPaymentArray[11] = fridayHours
+        outputPaymentArray[12] = saturdayHours
+        outputPaymentArray[13] = sundayHours
+        outputPaymentArray[14] = normalHours
+        outputPaymentArray[15] = weekOvertimeHours
+        outputPaymentArray[16] = grossPay
+        outputPaymentArray[17] = employeeSuperDeduction
+        outputPaymentArray[18] = employeeHealthDeduction
+        outputPaymentArray[19] = tax
+        outputPaymentArray[20] = netPay
+        returnSelection = input("Enter anything to return: ")
+    else:
+        clearconsole()
+    # end if
+    PaymentArray.append(outputPaymentArray)
+    TwoDimensionalArrayToFile(array=PaymentArray, file=PaymentFile)
+    return False
+# end def
 
 # def Display_TestMode(FileToBeRead):
 #     DataArray = []
@@ -1430,6 +1584,7 @@ if file_exists("EmployeeLoginDetails.csv") == False:
     f.close()
 else:
     employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
+# end if
 
 if file_exists("SuperannuationRates.csv") == False:
     f = open('SuperannuationRates.csv', 'a+')
@@ -1443,6 +1598,7 @@ if file_exists("SuperannuationRates.csv") == False:
     f.close()
 else:
     superannuationArray = readCSV2Array('SuperannuationRates.csv')
+# end if
 
 if file_exists("TaxRates.csv") == False:
     f = open('TaxRates.csv', 'a+')
@@ -1454,6 +1610,7 @@ if file_exists("TaxRates.csv") == False:
     f.close()
 else:
     taxRatesArray = readCSV2Array('TaxRates.csv')
+# end if
 
 if file_exists("HealthInsurance.csv") == False:
     f = open('HealthInsurance.csv', 'a+')
@@ -1467,6 +1624,7 @@ if file_exists("HealthInsurance.csv") == False:
     f.close()
 else:
     healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
+# end if
 
 if file_exists("RolePaymentRecord.csv") == False:
     f = open('RolePaymentRecord.csv', 'a+')
@@ -1480,6 +1638,7 @@ if file_exists("RolePaymentRecord.csv") == False:
     f.close()
 else:
     rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
+# end if
 
 if file_exists("EmployeeFile.csv") == False:
     f = open('EmployeeFile.csv', 'a+')
@@ -1495,23 +1654,45 @@ if file_exists("EmployeeFile.csv") == False:
     f.close()
 else:
     EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
+# end if
 
+if file_exists("PaymentFile.csv") == False:
+    f = open('PaymentFile.csv', 'a+')
+    print("CREATED FILE: PaymentFile")
+    f.close
+else:
+    PaymentArray = readCSVto2DArray('PaymentFile.csv')
+# end if
 
 # ======================================================================================================================
 # mainline code begins below
 # ======================================================================================================================
 
+#### VARIABLES ####
+
 loginGuesses = 0
 guessLimit = 3
 guessesLeft = guessLimit - loginGuesses
-confirmation = False
-display_Navigation_Loop = False
-display_InteractiveClockIn_Return = False
 loginOutput = None
 employeeID = '0'
 employeeIDArrayPlacement = 0
+clerkOptionsReturn = ''
+clerkPaymentOptionsReturn = ''
+
+# Loop conditions #
+
+confirmation = False
+display_Navigation_Loop = False
+display_InteractiveClockIn_Return = False
+display_ClerkPaymentOptions_loop = True
+display_ClerkOptions_loop = True
+display_FinancialOptions_loop = True
+display_ClerkEmployeeOptions_loop = True
+
+# Main body #
 
 while display_Navigation_Loop == False:
+    display_Navigation_Loop == False
     if Display_Navigation() == 't':
         clearconsole()
         print("")
@@ -1522,10 +1703,78 @@ while display_Navigation_Loop == False:
         print(rolePaymentArray)
         print(EmployeeDetailsArray)
         # Display_TestMode(FileToBeRead)
+        fileFound = False
+        #tax array
+        sameTaxFound = False
+        taxPos = 0
+        taxFileSize = 0
+        taxHolder = 0
+        TestTaxArray = None
+        #login array
+        TestLoginArray = None
+        # other variables
+        testWhileCounter = 0
+        personFileLength = 0
+        TestDetailsSubArray = [None]*15             # "4,Barista,8,25,False,MONDAY,0000,0000,0,0,0,0,0,0,0"
+        while fileFound == False:
+            fileToBeRead = input("| Please input the name of the file to be read")
+            if file_exists(str(fileToBeRead)) == True:
+                fileFound = True
+            else:
+                print("|")
+                print("| ERROR: File could not be found")
+                print("|")
+            # end if
+        FileArray = readCSVto2DArray(str(fileToBeRead))
+        personFileLength = ArrayLengthCalculator(FileArray)
+        for item in FileArray:
+            if str(item[2]).lower() == 'Administator':
+                item[2] = 'Clerk'
+            # end if
+            for tax in TestTaxArray:
+                if item[3] == tax:
+                    sameTaxFound = True
+                # end if
+            # end for
+            if sameTaxFound == False:
+                taxFileSize = taxFileSize + 1
+            # end if
+        # end for
+        TestTaxArray = [None]*taxFileSize
+        for item in FileArray:
+            for tax in TestTaxArray:
+                if item[3] == tax:
+                    sameTaxFound = True
+                else:
+                    taxHolder = item[3]
+                # end if
+            # end for
+            if sameTaxFound == False:
+                TestTaxArray[taxPos] = taxHolder
+            # end if
+            taxPos = taxPos + 1
+        # end for
+        for Item
+        while testWhileCounter < personFileLength:
+            Display_EmployeePaymentScreen(EmployeeID=int(testWhileCounter+1),
+                                          EmployeeDetailsArray=,
+                                          EmployeeDetailsFile=False,
+                                          EmployeeLoginArray=,
+                                          EmployeeLoginFile=False,
+                                          RolePayArray=rolePaymentArray,
+                                          RolePayFile=False,
+                                          TaxArray=TestTaxArray,
+                                          TaxFile=False,
+                                          PaymentArray=PaymentArray,
+                                          PaymentFile='PaymentFile.csv',
+                                          TestingUse=True)
+            testWhileCounter = testWhileCounter + 1
+
     else:
         clearconsole()
+        loginGuesses = 0
         while loginGuesses < guessLimit:
-            loginOutput = Display_InteractiveLogin(array=employeeLoginArray)
+            loginOutput = Display_InteractiveLogin(array=employeeLoginArray, file='EmployeeLoginDetails.csv')
             if loginOutput == False:
                 loginGuesses = loginGuesses + 1
                 guessesLeft = guessesLeft - 1
@@ -1539,25 +1788,123 @@ while display_Navigation_Loop == False:
         # end while
         if loginGuesses == guessLimit:
             print("Account lockout: please contact administrator")
+            time.sleep(3)
             exit()
         else:
             clearconsole()
             employeeID = loginOutput
-            specificEmployeeArray = EmployeeDetailsArray[FindCurrentEmployee(loginOutput, EmployeeDetailsArray)]
+            specificEmployeeArray = EmployeeDetailsArray[FindCurrentEmployee(EmployeeID=loginOutput,
+                                                                             array=EmployeeDetailsArray,
+                                                                             file='EmployeeFile.csv')]
             while display_InteractiveClockIn_Return == False:
+                display_InteractiveClockIn_Return = False
                 employeeIDArrayPlacement = int(employeeID) - 1
                 if EmployeeDetailsArray[employeeIDArrayPlacement][1] != 'Clerk':
-                    if Display_InteractiveClockIn(EmployeeID=employeeID, EmployeeArray=specificEmployeeArray,
-                                                  LoginArray=employeeLoginArray) == True:
+                    if Display_InteractiveClockIn(EmployeeID=employeeID,
+                                                  LoginArray=employeeLoginArray,
+                                                  LoginFile='EmployeeLoginDetails.csv',
+                                                  EmployeeDetailsArray=EmployeeDetailsArray,
+                                                  EmployeeDetailsFile='EmployeeFile.csv') == True:
                         clearconsole()
-                        Display_Clockin(EmployeeID=employeeID,CurrentEmployeeArray=specificEmployeeArray,
-                                        LoginArray=employeeLoginArray)
+                        Display_Clockin(EmployeeID=employeeID,
+                                        LoginArray=employeeLoginArray,
+                                        LoginFile='EmployeeLoginDetails.csv',
+                                        EmployeeDetailsArray=EmployeeDetailsArray,
+                                        EmployeeDetailsFile='EmployeeFile.csv')
                         time.sleep(5)
                         exit()
                     else:
-                        display_InteractiveClockIn_Return == True
+                        display_InteractiveClockIn_Return = True
                 else:
-                    Display_ClerkOptions(EmployeeID=employeeID)
+                    while display_ClerkOptions_loop == True:
+                        display_ClerkOptions_loop = True
+                        clearconsole()
+                        clerkOptionsReturn = Display_ClerkOptions(EmployeeID=employeeID,
+                                                                  EmployeeLoginArray=employeeLoginArray,
+                                                                  LoginFile='EmployeeLoginDetails.csv',
+                                                                  EmployeeDetailsArray=EmployeeDetailsArray,
+                                                                  EmployeeDetailsFile='EmployeeFile.csv')
+                        if clerkOptionsReturn == 'Payment':
+                            while display_ClerkPaymentOptions_loop == True:
+                                display_ClerkPaymentOptions_loop = True
+                                clearconsole()
+                                clerkPaymentOptionsReturn = Display_ClerkPaymentOptions(EmployeeLoginArray=
+                                                                                        employeeLoginArray,
+                                                                                        LoginFile=
+                                                                                        'EmployeeLoginDetails.csv')
+                                if clerkPaymentOptionsReturn != False:
+                                    clearconsole()
+                                    Display_EmployeePaymentScreen(EmployeeID=clerkPaymentOptionsReturn,
+                                                                  EmployeeDetailsArray=EmployeeDetailsArray,
+                                                                  EmployeeDetailsFile='EmployeeFile.csv',
+                                                                  EmployeeLoginArray=employeeLoginArray,
+                                                                  EmployeeLoginFile='EmployeeLoginDetails.csv',
+                                                                  RolePayArray=rolePaymentArray,
+                                                                  RolePayFile='RolePaymentRecord.csv',
+                                                                  TaxArray=taxRatesArray,
+                                                                  TaxFile='TaxRates.csv',
+                                                                  PaymentArray=PaymentArray,
+                                                                  PaymentFile='PaymentFile.csv',
+                                                                  TestingUse=False)
+                                # end if
+                                display_ClerkPaymentOptions_loop = False
+                                display_ClerkOptions_loop = False
+                                display_InteractiveClockIn_Return = True
+                                clearconsole()
+                        elif clerkOptionsReturn == 'Financial':
+                            while display_FinancialOptions_loop == True:
+                                display_FinancialOptions_loop = True
+                                clearconsole()
+                                display_FinancialOptions_return = Display_FinancialOptions()
+                                clearconsole()
+                                if display_FinancialOptions_return == 'TaxRates':
+                                    Display_Financial_TaxRates(TaxRateArray=taxRatesArray,
+                                                               TaxRatesFile='TaxRates.csv')
+                                elif display_FinancialOptions_return == 'Superannuation':
+                                    Display_Financial_Superannuation(SuperArray=superannuationArray,
+                                                                     SuperFile='SuperannuationRates.csv')
+                                elif display_FinancialOptions_return == 'HealthInsurance':
+                                    Display_Financial_HealthInsurance(HealthInsuranceArray=healthInsuranceArray,
+                                                                      HealthFile='HealthInsurance.csv')
+                                else:
+                                    Display_Financial_PayRates(RolePaymentArray=rolePaymentArray,
+                                                               RolePayFile='RolePaymentRecord.csv')
+                                # end if
+                                display_FinancialOptions_loop = False
+                                display_ClerkOptions_loop = False
+                                display_InteractiveClockIn_Return = True
+                                clearconsole()
+                            # end while
+                        elif clerkOptionsReturn == 'Employee':
+                            while display_ClerkEmployeeOptions_loop == True:
+                                display_ClerkEmployeeOptions_loop = True
+                                clearconsole()
+                                display_ClerkEmployeeOptions_return = Display_ClerkEmployeeOptions()
+                                if display_ClerkEmployeeOptions_return == 'Add':
+                                    Display_AddEmployee(EmployeeLoginArray=employeeLoginArray,
+                                                         EmployeeDetailsArray=EmployeeDetailsArray,
+                                                         EmployeeLoginFile='EmployeeLoginDetails.csv',
+                                                         EmployeeDetailsFile='EmployeeFile.csv')
+                                elif display_ClerkEmployeeOptions_return == 'Remove':
+                                    Display_RemoveEmployee(EmployeeLoginArray=employeeLoginArray,
+                                                         EmployeeDetailsArray=EmployeeDetailsArray,
+                                                         EmployeeLoginFile='EmployeeLoginDetails.csv',
+                                                         EmployeeDetailsFile='EmployeeFile.csv')
+                                else:
+                                    Display_EditEmployee(EmployeeLoginArray=employeeLoginArray,
+                                                         EmployeeDetailsArray=EmployeeDetailsArray,
+                                                         EmployeeLoginFile='EmployeeLoginDetails.csv',
+                                                         EmployeeDetailsFile='EmployeeFile.csv')
+                                # end if
+                                display_ClerkEmployeeOptions_loop = False
+                                display_ClerkOptions_loop = False
+                                display_InteractiveClockIn_Return = True
+                                clearconsole()
+                            # end while
+                        else:
+                            display_ClerkOptions_loop = False
+                        # end if
+                    # end while
                 # end if
             # end while
         # end if
