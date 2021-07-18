@@ -188,7 +188,7 @@ def FindCurrentEmployee(EmployeeID, array, file):
 # end def
 
 def TimeCalculator(ClockInTime, ClockOutTime):
-    outputTime = int(ClockOutTime) - int(ClockInTime)
+    outputTime = float(ClockOutTime) - float(ClockInTime)
     if outputTime < 0:
         return False
     else:
@@ -395,16 +395,27 @@ def CalculateTotalPay(BasePay, OvertimePay, PublicHolidayHours, SaturdayHours, S
 
 def TwoDimensionalArrayToFile(array, file):
     outputString = ''
+    arrayLastPos = ArrayLengthCalculator(array=array[0])-1
+    pos = 0
     f = open(file, 'w+')
+    f.write("")
+    f.close()
+    f = open(file, 'a+')
     for item in array:
         for entity in item:
-            outputString = entity + ', '
+            if pos == arrayLastPos:
+                outputString = outputString + str(entity)
+            else:
+                outputString = outputString + str(entity) + ','
+            pos = pos + 1
+            # end if
         # end for
         f.write(outputString)
         f.write("\n")
         outputString = ''
-    f.close()
     # end for
+    f.close()
+# end def
 
 def ArrayToFile(array, file):
     f = open(file, 'w+')
@@ -552,14 +563,18 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
     clockSelection = ""
     clockSelectionValidation = False
     hoursWorked = 0
-    employeeFirstName = LoginArray[int(EmployeeID-1)][1]
-    employeeLastName = LoginArray[int(EmployeeID-1)][2]
+    employeeFirstName = str(LoginArray[int(EmployeeID)-1][1])
+    employeeLastName = str(LoginArray[int(EmployeeID)-1][2])
     EmployeeWelcome = "Welcome Employee: " + employeeFirstName + " " + employeeLastName
     Header(SystemHeader="Interactive: Employee", HeaderMessage=EmployeeWelcome)
     print("| ")
     clockSelection = input("| Clock - [I]n / [O]ut(default)")
     if clockSelection.lower() != 'i':
         clockSelectionValidation = 'o'
+    else:
+        EmployeeArray[7] = '0000'
+        EmployeeArray[5] = 'MONDAY'
+        EmployeeArray[4] = False
     # end if
     print("| ")
     print("| ")
@@ -576,7 +591,6 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
         else:
             if clockSelection.lower() == 'o':
                 dayString = str((EmployeeArray[5][0] + EmployeeArray[5][1] + EmployeeArray[5][2])).lower()
-                print(isSameString(daySelection, dayString))
                 if daySelection.lower() == dayString:
                     daySelectionValidation = True
                 else:
@@ -615,18 +629,25 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
             EmployeeArray[6] = timeStamp
             if daySelection.lower() == 'mon':
                 EmployeeArray[5] = 'MONDAY'
+                EmployeeArray[8] = '0'
             elif daySelection.lower() == 'tue':
                 EmployeeArray[5] = 'TUESDAY'
+                EmployeeArray[9] = '0'
             elif daySelection.lower() == 'wed':
                 EmployeeArray[5] = 'WEDNESDAY'
+                EmployeeArray[10] = '0'
             elif daySelection.lower() == 'thu':
                 EmployeeArray[5] = 'THURSDAY'
+                EmployeeArray[11] = '0'
             elif daySelection.lower() == 'fri':
                 EmployeeArray[5] = 'FRIDAY'
+                EmployeeArray[12] = '0'
             elif daySelection.lower() == 'sat':
                 EmployeeArray[5] = 'SATURDAY'
+                EmployeeArray[13] = '0'
             elif daySelection.lower() == 'sun':
                 EmployeeArray[5] = 'SUNDAY'
+                EmployeeArray[14] = '0'
             # end if
         else:
             EmployeeArray[4] = False
@@ -648,7 +669,9 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
                 EmployeeArray[14] = hoursWorked
             # end if
         # end if
+        print(EmployeeArray)
         EmployeeDetailsArray[int(EmployeeID)-1] = EmployeeArray
+        print(EmployeeDetailsArray)
         TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
         return True
     # end if
@@ -683,7 +706,7 @@ def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, Emp
     else:
         print("| Time:  " + CurrentEmployeeArray[7])
         print("| ")
-        print("| Hours:  " + TimeCalculator(ClockInTime=CurrentEmployeeArray[6], ClockOutTime=CurrentEmployeeArray[7]))
+        print("| Hours:  " + str(TimeCalculator(ClockInTime=CurrentEmployeeArray[6], ClockOutTime=CurrentEmployeeArray[7])))
         print("| ")
         print("-----------------------------------------------------------")
     # end if
@@ -1467,12 +1490,12 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     clearconsole()
     Header(SystemHeader="Interactive: Clerk", HeaderMessage=descriptiveIntroduction)
     print("|")
-    print("| Employee Given name:" + employeeName)
+    print("| Employee Given name:" + str(employeeName))
     print("|")
-    print("| Employee surname:" + employeeSurname)
+    print("| Employee surname:" + str(employeeSurname))
     print("|")
-    print("| Role: " + employeeRole)
-    print("| Hourly rate: $" + hourlyPay)
+    print("| Role: " + str(employeeRole))
+    print("| Hourly rate: $" + str(hourlyPay))
     print("|")
     print("| Monday: " + str(mondayHours))
     print("| Tuesday: " + str(tuesdayHours))
@@ -1509,6 +1532,8 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("")
     if hourlyPay < 30:
         taxRate = taxRatesArray[0]
+    elif ArrayLengthCalculator(taxRatesArray) > 2 and hourlyPay >= 50:
+        taxRate = taxRatesArray[2]
     else:
         taxRate = taxRatesArray[1]
     # end if
@@ -1583,6 +1608,7 @@ if file_exists("EmployeeLoginDetails.csv") == False:
     f.write("\n")
     print("CREATED FILE: EmployeeLoginDetails")
     f.close()
+    employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
 else:
     employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
 # end if
@@ -1597,6 +1623,7 @@ if file_exists("SuperannuationRates.csv") == False:
     f.write("\n")
     print("CREATED FILE: SuperannuationRates")
     f.close()
+    superannuationArray = readCSV2Array('SuperannuationRates.csv')
 else:
     superannuationArray = readCSV2Array('SuperannuationRates.csv')
 # end if
@@ -1609,6 +1636,7 @@ if file_exists("TaxRates.csv") == False:
     f.write("\n")
     print("CREATED FILE: TaxRates")
     f.close()
+    taxRatesArray = readCSV2Array('TaxRates.csv')
 else:
     taxRatesArray = readCSV2Array('TaxRates.csv')
 # end if
@@ -1623,6 +1651,7 @@ if file_exists("HealthInsurance.csv") == False:
     f.write("\n")
     print("CREATED FILE: HealthInsurance")
     f.close()
+    healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
 else:
     healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
 # end if
@@ -1637,6 +1666,7 @@ if file_exists("RolePaymentRecord.csv") == False:
     f.write("\n")
     print("CREATED FILE: RolePaymentRecord")
     f.close()
+    rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
 else:
     rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
 # end if
@@ -1653,6 +1683,7 @@ if file_exists("EmployeeFile.csv") == False:
     f.write("\n")
     print("CREATED FILE: EmployeeFile")
     f.close()
+    EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
 else:
     EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
 # end if
@@ -1663,6 +1694,7 @@ if file_exists("PaymentFile.csv") == False:
     f.write("\n")
     print("CREATED FILE: PaymentFile")
     f.close
+    PaymentArray = readCSVto2DArray('PaymentFile.csv')
 else:
     PaymentArray = readCSVto2DArray('PaymentFile.csv')
 # end if
