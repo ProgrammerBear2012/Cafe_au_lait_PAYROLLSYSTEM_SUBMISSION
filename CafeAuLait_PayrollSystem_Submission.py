@@ -124,28 +124,27 @@ def convertListTo2DArray(list_of_lists): # takes 2 dimensional list
     subItemPos = 0
     arrayLength = 0
     subArrayLength = 0
-    outputArray = [None] # output array initialised
-    subArray = [None] # subArray output initialised.
-    for list in list_of_lists:
+    outputArray = [None]                                # output array initialised
+    subArray = [None]                                   # subArray output initialised.
+    for list in list_of_lists:                          # find the length of the array to be created
         arrayLength = arrayLength + 1
-    # end for
-    for list in list_of_lists:
-        for item in list:
-            subArrayLength = subArrayLength + 1
-    # end for
-    subArrayLength = int((subArrayLength + 1) / arrayLength)
-    outputArray = [None] * arrayLength
-    for list in list_of_lists:
-        subArray = [None] * subArrayLength
-        for item in list:
-            subArray[subItemPos] = str(list[subItemPos])
-            subItemPos = subItemPos + 1
+        for item in list:                               # iterate through every item in the list inside the list, and
+            subArrayLength = subArrayLength + 1         # find the length of the new subarray
         # end for
-        outputArray[arrayPos] = subArray
-        arrayPos = arrayPos + 1
-        subItemPos = 0
     # end for
-    return outputArray
+    subArrayLength = int((subArrayLength + 1) / arrayLength)  # the subarray length is divided by the arrayLength to find its true length
+    outputArray = [None] * arrayLength                         # change the actual array to have its defined length
+    for list in list_of_lists:
+        subArray = [None] * subArrayLength                    # change the subArray to be the size of the defined length
+        for item in list:
+            subArray[subItemPos] = str(list[subItemPos])      # individually add each item from the list to the subarray
+            subItemPos = subItemPos + 1                       # increase the counter of the item position
+        # end for
+        outputArray[arrayPos] = subArray                      # add each subarray to the big array
+        arrayPos = arrayPos + 1                               # increase the array position counter
+        subItemPos = 0                                        # reset the subArray position counter
+    # end for
+    return outputArray                                        # return the new array
 # end def
 
 def readCSVto2DArray(filename):
@@ -176,43 +175,43 @@ def readCSVto2DArray(filename):
 # end def
 
 def FindCurrentEmployee(EmployeeID, file):
-    array = readCSVto2DArray(file)
-    arrayCounter = 0
+    array = readCSVto2DArray(file)              # the array is equal to the contents of the file
+    arrayCounter = 0                            # initialise a position counter
     for employees in array:
-        if employees[0] != str(EmployeeID):
+        if employees[0] != str(EmployeeID):     # checks if the employeeID matches the inputted ID, if not increase the position counter
             arrayCounter = arrayCounter + 1
         else:
-            return True
+            return True                         # if the ID matches, return True
         # end if
-    return False
+    return False                                # if the ID cannot be found, return false
     # end for
 # end def
 
 def TimeCalculator(ClockInTime, ClockOutTime):
-    outputTime = float(ClockOutTime) - float(ClockInTime)
-    if outputTime < 0:
+    outputTime = float(ClockOutTime) - float(ClockInTime)   # the outputTime is equal to the difference between the two inputted times. (It is not a correct time yet)
+    if outputTime < 0:                                      # if the outputTime is invalid (less than 0) return False.
         return False
     else:
-        outputTime = outputTime / 100
+        outputTime = outputTime / 100                       # if it is valid, convert it to hours and minutes and return the converted time.
         return outputTime
 # end def
 
 def TimeChecker(time):
-    if int(time) == False:
+    if time.isnumeric() == False:                     # checks if the time is an integer number, if not, return false.
         return False
-    elif int(time) > 2400:
+    elif int(time) > 2400:                            # if the time is an integer but above 2400, it is not a real time.
         return False
-    elif int(time) < 0:
+    elif int(time) < 0:                               # if the time is an integer but below 0, it is not a real time.
         return False
-    elif int(str(time[2] + time[3])) > 60:
+    elif int(str(time[2] + time[3])) > 60:            # if the minutes are above 60, it is not a real time.
         return False
-    else:
+    else:                                             # if it passes all of the above statements, it is a real time.
         return True
     # end if
 # end def
 
 def ValidateRole(EmployeeRole, RolePayArray):
-    for role in RolePayArray:
+    for role in RolePayArray:                                   # checks if the inputted role is in the system.
         if EmployeeRole.lower() == str(role[0][0]).lower():
             return str(role)
         else:
@@ -222,54 +221,59 @@ def ValidateRole(EmployeeRole, RolePayArray):
 # end def
 
 def GenerateEmployeeID(EmployeeLoginArray):
-    newEmployeeID = int(ArrayLengthCalculator(array=EmployeeLoginArray)) + 1
-    return newEmployeeID
-# end def
+    newEmployeeID = int(ArrayLengthCalculator(array=EmployeeLoginArray)) + 1  # finds the amount of current employees
+    return newEmployeeID                                                      # and increments that value by 1 to
+# end def                                                                     # generate a new employeeID
 
 def GenerateEmployeePass(EmployeeLoginArray, Role):
-    arrayLength = ArrayLengthCalculator(array=EmployeeLoginArray)
-    validatePass = False
-    validationCounter = 0
+    arrayLength = ArrayLengthCalculator(array=EmployeeLoginArray)   # the default password starts with the Role,
+    validatePass = False                                            # has the word "Pass" and end with a random
+    validationCounter = 0                                           # 3 digit number, e.g. BaristaPass423
     employeePass = ''
     endingNum = 0
     while validatePass == False:
-        endingNum = randint(100, 999)
-        employeePass = Role + "Pass" + str(endingNum)
+        endingNum = randint(100, 999)                           # create a random 3 digit number
+        employeePass = Role + "Pass" + str(endingNum)           # put together the 3 parts of the string
         for password in EmployeeLoginArray:
-            if password[3] != employeePass:
-                validationCounter = validationCounter + 1
+            if password[3] != employeePass:                     # checks if the password is already in use
+                validationCounter = validationCounter + 1       # increments a validation variable
             # end if
         # end for
-        if validationCounter == arrayLength:
-            return employeePass
-        validationCounter = 0
+        if validationCounter == arrayLength:              # if the validation variable is the same as the array
+            return employeePass                           # length then the password is a valid one and can be returned.
+        validationCounter = 0                             # reset the validation variable
         #end if
     # end while
 # end def
 
 def CalculateTotalHours(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours):
-    hoursWorked = MondayHours + TuesdayHours + WednesdayHours + ThursdayHours + FridayHours + SaturdayHours + SundayHours
+    hoursWorked = MondayHours + TuesdayHours + WednesdayHours + ThursdayHours + FridayHours + SaturdayHours + SundayHours # adds all the hours they've worked together
     return hoursWorked
 # end def
 
 def OvertimeCalculator(DayHours):
     overTime = 0
-    if DayHours > 8:
-        overTime = int(DayHours) + 1
+    if DayHours > 8:                    # checks if the employee has worked overtime.
+        overTime = int(DayHours) - 7    # takes away the normal hours to find the real dayhours.
     # end def
     return overTime
 # end def
 
 def CalculateBasePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours, SundayHours,
                      HourlyRate):
-    basePay = CalculateTotalHours(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
-                                  SundayHours) * HourlyRate
+    basePay = CalculateTotalHours(MondayHours=MondayHours,
+                                  TuesdayHours=TuesdayHours,
+                                  WednesdayHours=WednesdayHours,
+                                  ThursdayHours=ThursdayHours,
+                                  FridayHours=FridayHours,
+                                  SaturdayHours=SaturdayHours,
+                                  SundayHours=SundayHours) * HourlyRate   # gets the base pay for the hours worked.
     return basePay
 
 def WeekOvertimeCalculator(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
                            SundayHours):
-    MondayOvertime = OvertimeCalculator(DayHours=MondayHours)
-    TuesdayOvertime = OvertimeCalculator(DayHours=TuesdayHours)
+    MondayOvertime = OvertimeCalculator(DayHours=MondayHours)           # finds the overtime worked each day and
+    TuesdayOvertime = OvertimeCalculator(DayHours=TuesdayHours)         # adds it all together.
     WednesdayOvertime = OvertimeCalculator(DayHours=WednesdayHours)
     ThurdayOvertime = OvertimeCalculator(DayHours=ThursdayHours)
     FridayOvertime = OvertimeCalculator(DayHours=FridayHours)
@@ -282,39 +286,39 @@ def WeekOvertimeCalculator(MondayHours, TuesdayHours, WednesdayHours, ThursdayHo
 def CalculateTax(GrossPay, HourlyRate, TaxRatesArray):
     taxRate = 0
     totalTax = 0
-    taxArray = sorted(TaxRatesArray)
-    if HourlyRate < 30:
+    taxArray = sorted(TaxRatesArray)                        # sorts the tax array from lowest tax rate to the largest.
+    if HourlyRate < 30:                                  # if tax rate is in the lowest bracket use the lowest tax rate
         taxRate = int(TaxRatesArray[0])/100
-    elif HourlyRate < 60:
+    elif HourlyRate < 60:                                # if tax rate is in the second bracket use the second tax rate
         taxRate = int(TaxRatesArray[1])/100
     else:
-        if ArrayLengthCalculator(TaxRatesArray) > 2:
-            taxRate = int(TaxRatesArray[2])/100
+        if ArrayLengthCalculator(TaxRatesArray) > 2:    # checks if a higher tax rate has been added.
+            taxRate = int(TaxRatesArray[2])/100         # uses the higher tax rate
         else:
-            taxRate = int(TaxRatesArray[1])/100
-        # end if
+            taxRate = int(TaxRatesArray[1])/100         # if the higher tax rate has not been added, use the default
+        # end if                                        # high tax rate.
     # end if
-    totalTax = GrossPay*taxRate
-    totalTax = round(totalTax, 2)
+    totalTax = GrossPay*taxRate                         # total tax to be paid
+    totalTax = round(totalTax, 2)                       # round the total tax to two decimal points.
     return totalTax
 # end def
 
 def CalculateNetPay(GrossPay, Tax, SuperRate, HealthInsurnace):
-    SuperDeduction = GrossPay*(SuperRate/100)
+    SuperDeduction = GrossPay*(SuperRate/100)               # net pay is the gross pay taking away all the deductions
     netPay = GrossPay - Tax - SuperDeduction - HealthInsurnace
     return netPay
 # end def
 
 def CalculateOvertimePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHours, FridayHours, SaturdayHours,
                          SundayHours, HourlyRate):
-    MondayOvertime = OvertimeCalculator(DayHours=MondayHours)
+    MondayOvertime = OvertimeCalculator(DayHours=MondayHours)       # define all of the overtime
     TuesdayOvertime = OvertimeCalculator(DayHours=TuesdayHours)
     WednesdayOvertime = OvertimeCalculator(DayHours=WednesdayHours)
     ThursdayOvertime = OvertimeCalculator(DayHours=ThursdayHours)
     FridayOvertime = OvertimeCalculator(DayHours=FridayHours)
     SaturdayOvertime = OvertimeCalculator(DayHours=SaturdayHours)
     SundayOvertime = OvertimeCalculator(DayHours=SundayHours)
-    MondayOvertimePay = 0
+    MondayOvertimePay = 0                                          # initialise overtime pay.
     TuesdayOvertimePay = 0
     WednesdayOvertimePay = 0
     ThursdayOvertimePay = 0
@@ -322,8 +326,8 @@ def CalculateOvertimePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHour
     SaturdayOvertimePay = 0
     SundayOvertimePay = 0
     totalOvertimePay = 0
-    if TuesdayOvertime > 0 and TuesdayOvertime <= 3:
-        TuesdayOvertimePay = TuesdayOvertime*(HourlyRate*1.25)
+    if TuesdayOvertime > 0 and TuesdayOvertime <= 3:                # check every day for their overtime hours
+        TuesdayOvertimePay = TuesdayOvertime*(HourlyRate*1.25)      # add the appropriate penalty rate.
     elif TuesdayOvertime > 3:
         TuesdayOvertimePay = TuesdayOvertime*(HourlyRate*1.45)
     # end if
@@ -351,13 +355,13 @@ def CalculateOvertimePay(MondayHours, TuesdayHours, WednesdayHours, ThursdayHour
         SundayOvertimePay = SundayOvertime*(HourlyRate*1.5)
     # end if
     totalOvertimePay = MondayOvertimePay + TuesdayOvertimePay + WednesdayOvertimePay + ThursdayOvertimePay +\
-                       FridayOvertimePay + SaturdayOvertimePay + SundayOvertimePay
+                       FridayOvertimePay + SaturdayOvertimePay + SundayOvertimePay    # add all overtime benefits
     return totalOvertimePay
 # end def
 
 def CalculatePublicHolidayPay(PublicHolidayHours, hourlyPay):
-    publicHolidayOvertime = OvertimeCalculator(DayHours=PublicHolidayHours)
-    publicHolidayOvertimePay = 0
+    publicHolidayOvertime = OvertimeCalculator(DayHours=PublicHolidayHours)     # checks for overtime and adds the
+    publicHolidayOvertimePay = 0                                                # appropriate penalty holiday rates.
     publicHolidayPay = 0
     if publicHolidayOvertime > 0:
         publicHolidayOvertimePay = publicHolidayOvertime*(hourlyPay*1.5)
@@ -371,7 +375,7 @@ def CalculatePublicHolidayPay(PublicHolidayHours, hourlyPay):
 # end def
 
 def CalculateTotalPay(BasePay, OvertimePay, PublicHolidayHours, SaturdayHours, SundayHours):
-    totalPay = 0
+    totalPay = 0                        # initialise variables
     publicHolidayBenefits = 0
     saturdayBenefits = 0
     sundayBenefits = 0
@@ -379,39 +383,39 @@ def CalculateTotalPay(BasePay, OvertimePay, PublicHolidayHours, SaturdayHours, S
         publicHolidayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
     else:
         publicHolidayBenefits = PublicHolidayHours*4
-    #end if
+    # end if
     if SaturdayHours > 8:
         saturdayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
     else:
         saturdayBenefits = SaturdayHours*3
-    #end if
+    # end if
     if SundayHours > 8:
         sundayBenefits = 8*4 #max amount of hours that can be worked without overtime multiplied by public holiday bonus
     else:
         sundayBenefits = SundayHours*4
-    #end if
+    # end if
     totalPay = BasePay + OvertimePay + publicHolidayBenefits + saturdayBenefits + sundayBenefits
-    return totalPay
+    return totalPay     # adds all benefits, penalty rates and the base rates to the total pay.
 # end def
 
 def TwoDimensionalArrayToFile(array, file):
     outputString = ''
     arrayLastPos = ArrayLengthCalculator(array=array[0])-1
     pos = 0
-    f = open(file, 'w+')
+    f = open(file, 'w+')  # wipes the file
     f.write("")
     f.close()
-    f = open(file, 'a+')
+    f = open(file, 'a+')    # re-opens the file to allow correct writing.
     for item in array:
         for entity in item:
-            if pos == arrayLastPos:
-                outputString = outputString + str(entity)
+            if pos == arrayLastPos:         # loops through every item self-checking if it has reached the last position
+                outputString = outputString + str(entity)   # if it has, just add the entity as a string
             else:
-                outputString = outputString + str(entity) + ','
-            pos = pos + 1
+                outputString = outputString + str(entity) + ','     # if it hasn't, add the entity as a string with a comma.
+            pos = pos + 1  # update the position counter.
             # end if
         # end for
-        f.write(outputString)
+        f.write(outputString)       # write the string to the file and add a newline.
         f.write("\n")
         outputString = ''
     # end for
@@ -419,9 +423,12 @@ def TwoDimensionalArrayToFile(array, file):
 # end def
 
 def ArrayToFile(array, file):
-    f = open(file, 'w+')
+    f = open(file, 'w+')  # wipes the file
+    f.write("")
+    f.close()
+    f = open(file, 'a+')    # re-opens the file to allow correct writing.
     for item in array:
-        f.write(str(item))
+        f.write(str(item))      # for each item in the array, write the item and add a new line.
         f.write("\n")
     # end for
     f.close()
@@ -429,33 +436,33 @@ def ArrayToFile(array, file):
 def ArrayValidationAndDeletion(SpecificValueToBeDeleted, Array, File, TwoDimensionalArray):
     pos = 0
     for item in Array:
-        if item == SpecificValueToBeDeleted:
-            Array.delete(pos)
-            if TwoDimensionalArray == False:
+        if item == SpecificValueToBeDeleted:         # for each item, check if the item is the one to be deleted
+            Array.delete(pos)                        # if it is found, delete it.
+            if TwoDimensionalArray == False:         # if it's not a 2 dimensional array, use the single array to file
                 ArrayToFile(array=Array, file=File)
             else:
-                TwoDimensionalArrayToFile(array=Array, file=File)
+                TwoDimensionalArrayToFile(array=Array, file=File)  # if it is, use the 2D array to file function
             # end if
-            return True
+            return True         # if action was completed, return a true.
         # end if
         pos = pos + 1
     # end for
-    return False
+    return False            # if action was not completed, return a false.
 # end def
 
 def ArrayValidationAndAddition(SpecificValueToBeAdded, Array, File):
     pos = 0
     arrayLength = ArrayLengthCalculator(array=Array)
     outputArray = [None]*(arrayLength + 1)
-    if SpecificValueToBeAdded.isnumeric() == False:
-        return False
+    if SpecificValueToBeAdded.isnumeric() == False:     # check if the value to be added is a number, if it is return
+        return False                                    # a false because it cannot be completed.
     else:
-        for item in Array:
+        for item in Array:                              # for each item in the array, add the item to the output array.
             outputArray[pos] = item
             pos = pos + 1
         # end for
-        outputArray[pos] = SpecificValueToBeAdded
-        ArrayToFile(array=Array, file=File)
+        outputArray[pos] = SpecificValueToBeAdded       # for the last item in the array, add the new item.
+        ArrayToFile(array=Array, file=File)             # send the array off to it's file.
         return True
     # end if
 # end def
@@ -463,14 +470,14 @@ def ArrayValidationAndAddition(SpecificValueToBeAdded, Array, File):
 def FindPaymentForRole(Role, RolePayArray):
     payRate = 0
     for item in RolePayArray:
-        if str(Role) == item[0]:
+        if str(Role) == item[0]:      # finds the role and assigns the pay rate that corresponds to the role the payRate
             payRate = item[1]
         # end if
     # end for
     if payRate == 0:
-        return False
+        return False                  # if the role was not found, the pay rate will be 0 then return False
     else:
-        return payRate
+        return payRate                # if the role was found, return the pay rate.
     # end if
 # end def
 
@@ -480,7 +487,7 @@ def FindPaymentForRole(Role, RolePayArray):
 
 def isSameString(stringA, stringB):
     pos = 0
-    for character in stringA:
+    for character in stringA:       # breaks down the string into characters and does a check on each character.
         if character.lower() != stringB[pos].lower():
             return False
         pos = pos + 1
@@ -493,7 +500,7 @@ def isSameString(stringA, stringB):
 #                                                   DISPLAY FUNCTIONS                                                  #
 # ======================================================================================================================
 
-def Header(SystemHeader, HeaderMessage):
+def Header(SystemHeader, HeaderMessage):    # creates a standard header that allows for different System and Header text
     print("--------------------------------------------------------------------------------")
     print("| Cafe au Lait – Payment System: " + SystemHeader)
     print("--------------------------------------------------------------------------------")
@@ -504,23 +511,23 @@ def Header(SystemHeader, HeaderMessage):
 def Footer():
     SelectedNavigation = ''
     Breakout = False
+    print("----------------------------------------------------------------------------------------")   # Standardised
+    print("| [R]eturn")                                                                                 # footer
+    print("| [C]onfirm")                                                                                # text
     print("----------------------------------------------------------------------------------------")
-    print("| [R]eturn")
-    print("| [C]onfirm")
-    print("----------------------------------------------------------------------------------------")
-    while Breakout == False:
-        SelectedNavigation = input("::")
-        if SelectedNavigation.lower() == 'r':
+    while Breakout == False:                                             # while the loop is valid
+        SelectedNavigation = input("::")                                 # ask the user to input their choice
+        if SelectedNavigation.lower() == 'r':                            # if they wish to return, return False
             return False
-        elif SelectedNavigation.lower() == 'c':
-            return True
-        elif SelectedNavigation.lower() != 'c' and SelectedNavigation.lower() != 'r':
-            print("Please select a valid option")
+        elif SelectedNavigation.lower() == 'c':                          # if they wish to continue, return True
+            return True                                                  # this will continue the calculations
+        elif SelectedNavigation.lower() != 'c' and SelectedNavigation.lower() != 'r':       # if they don't select a
+            print("Please select a valid option")                                           # valid option, ask again.
         # end if
     # end while
 # end module
 
-def Display_Navigation():
+def Display_Navigation():           # establishes the path the user will go down, testing their file or interacting.
     optionSelected = ''
     Header(SystemHeader="Navigation", HeaderMessage="")
     print("|Please select the required mode to be used:")
@@ -570,10 +577,10 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
     Header(SystemHeader="Interactive: Employee", HeaderMessage=EmployeeWelcome)
     print("| ")
     clockSelection = input("| Clock - [I]n / [O]ut(default)")
-    if clockSelection.lower() != 'i':
-        clockSelectionValidation = 'o'
+    if clockSelection.lower() != 'i':    # checks if the employee has selected to clock in, if they haven't
+        clockSelectionValidation = 'o'   # automatically put them through the clocking out selection.
     else:
-        EmployeeArray[7] = '0000'
+        EmployeeArray[7] = '0000'       # if clocking in, reset the timestamp, day, and shift status.
         EmployeeArray[5] = 'MONDAY'
         EmployeeArray[4] = False
     # end if
@@ -583,22 +590,23 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
     print("| ")
     print("| [MON]day, [TUE]day, [WED]day, [THU]day, [FRI]day, [SAT]day, [SUN]day")
     while daySelectionValidation == False:
-        daySelection = input("| Day:")
+        daySelection = input("| Day:")      # allow the employee to input the current day.
         if daySelection.lower() != 'mon' and daySelection.lower() != 'tue' and daySelection.lower() != 'wed' and \
                 daySelection.lower() != 'thu' and daySelection.lower() != 'fri' and\
                 daySelection.lower() != 'sat' and daySelection.lower() != 'sun':
             print(" ")
-            print("ERROR: Please enter a valid day")
+            print("ERROR: Please enter a valid day")   # if it is an invalid day selection, make them input it again.
+            print(" ")
         else:
-            if clockSelection.lower() == 'o':
-                dayString = str((EmployeeArray[5][0] + EmployeeArray[5][1] + EmployeeArray[5][2])).lower()
-                if daySelection.lower() == dayString:
+            if clockSelection.lower() == 'o':       # if the clockout selection is 'clockout' then...
+                dayString = str((EmployeeArray[5][0] + EmployeeArray[5][1] + EmployeeArray[5][2])).lower() # find the current day.
+                if daySelection.lower() == dayString:       # compare the current day to the input, if it's correct then loop will finish.
                     daySelectionValidation = True
-                else:
+                else:       # if the day is not the same as the clockin day, throw error and make the employee reinput their selection.
                     print("ERROR: MUST CLOCK OUT ON SAME DAY")
                 # end if
             else:
-                daySelectionValidation = True
+                daySelectionValidation = True   # if it's a clock in situation, validate and finish the loop.
             # end if
         # end if
     # end while
@@ -607,29 +615,28 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
     print("| // input time using the time code hhmm e.g. 11:00am is 1100")
     print("| ")
     while timeStampValidation == False:
-        timeStamp = input("| Time:")
-        TimeChecker(time=timeStamp)
-        if TimeChecker(time=timeStamp) == True:
-            if clockSelection.lower() == 'o':
-                if TimeCalculator(ClockInTime=EmployeeArray[6], ClockOutTime=timeStamp) != False:
-                    timeStampValidation = True
+        timeStamp = input("| Time:")        # prompt employee to input a time selection.
+        if TimeChecker(time=timeStamp) == True:  # check the inputted time.
+            if clockSelection.lower() == 'o':       # if the time is validated, check if the employee is clocking out.
+                if TimeCalculator(ClockInTime=EmployeeArray[6], ClockOutTime=timeStamp) != False:       # if the time is valid
+                    timeStampValidation = True                                                          # validate the loop
                 else:
-                    print("ERROR: Please enter a valid time")
+                    print("ERROR: Please enter a valid time")           # if it is an invalid time, output an error
                     # end if
             else:
-                timeStampValidation = True
+                timeStampValidation = True                  # if employee is clocking in, validate the loop
             # end if
         else:
             print("")
-            print("ERROR: Please enter valid time")
+            print("ERROR: Please enter valid time")         # if the time is invalid, throw an error,
         # end if
     # end while
     if Footer() == True:
-        if clockSelection.lower() == 'i':
-            EmployeeArray[4] = True
+        if clockSelection.lower() == 'i':      # if clocking in, set the status of the shift to 'True' and the clockin
+            EmployeeArray[4] = True            # time to the timeStamp calculated.
             EmployeeArray[6] = timeStamp
-            if daySelection.lower() == 'mon':
-                EmployeeArray[5] = 'MONDAY'
+            if daySelection.lower() == 'mon':       # find the day selected, then change the current day to the inputted
+                EmployeeArray[5] = 'MONDAY'         # day and reset the worked hours to 0, it is yet to be calculated.
                 EmployeeArray[8] = '0'
             elif daySelection.lower() == 'tue':
                 EmployeeArray[5] = 'TUESDAY'
@@ -651,10 +658,10 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
                 EmployeeArray[14] = '0'
             # end if
         else:
-            EmployeeArray[4] = False
-            EmployeeArray[7] = timeStamp
-            hoursWorked = TimeCalculator(ClockInTime=EmployeeArray[2], ClockOutTime=EmployeeArray[3])
-            if daySelection.lower() == 'mon':
+            EmployeeArray[4] = False            # change the shift status to a false
+            EmployeeArray[7] = timeStamp        # add the clock out time stamp.
+            hoursWorked = TimeCalculator(ClockInTime=EmployeeArray[2], ClockOutTime=EmployeeArray[3])   # calculate the hours worked.
+            if daySelection.lower() == 'mon':       # Check for the day selected, and add the hourworked to the correct day.
                 EmployeeArray[8] = hoursWorked
             elif daySelection.lower() == 'tue':
                 EmployeeArray[9] = hoursWorked
@@ -670,13 +677,11 @@ def Display_InteractiveClockIn(EmployeeID, EmployeeDetailsArray, LoginArray, Emp
                 EmployeeArray[14] = hoursWorked
             # end if
         # end if
-        print(EmployeeArray)
-        EmployeeDetailsArray[int(EmployeeID)-1] = EmployeeArray
-        print(EmployeeDetailsArray)
-        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
-        return True
+        EmployeeDetailsArray[int(EmployeeID)-1] = EmployeeArray   # update the employee details array.
+        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)     # output the new array to its file.
+        return True     # if actions completed return a True
     # end if
-    return False
+    return False        # if actions are not completed (user wants to return), return a false.
 # end def
 
 def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
@@ -1045,14 +1050,14 @@ def Display_FinancialOptions():
     clerkFinancialOption = input("| [T]ax rate / [S]uperannuation / [H]ealth insurance / | [P]ay rates(default): ")
     print("| ")
     if Footer() == True:
-        if clerkFinancialOption.lower() == 't':
+        if clerkFinancialOption.lower() == 't':        # if the choice is for tax rates, show the tax rates screen
             returnStatement = 'TaxRates'
-        elif clerkFinancialOption.lower() == 's':
+        elif clerkFinancialOption.lower() == 's':      # if the choice is for super rates, show the super rates screen
             returnStatement = 'Superannuation'
-        elif clerkFinancialOption.lower() == 'h':
+        elif clerkFinancialOption.lower() == 'h':      # if the choice is for health plans, show the health plans screen
             returnStatement = 'HealthInsurance'
         else:
-            returnStatement = 'PayRates'
+            returnStatement = 'PayRates'    # otherwise show the pay rates screen.
         # end if
         return returnStatement
     # end if
@@ -1597,7 +1602,7 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
 # File Setup
 # ======================================================================================================================
 
-if file_exists("EmployeeLoginDetails.csv") == False:
+if file_exists("EmployeeLoginDetails.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('EmployeeLoginDetails.csv', 'a+')
     f.write("1,Billy,Bob,EmployeePass123")
     f.write("\n")
@@ -1609,12 +1614,12 @@ if file_exists("EmployeeLoginDetails.csv") == False:
     f.write("\n")
     print("CREATED FILE: EmployeeLoginDetails")
     f.close()
-    employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
+    employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')       # assign the files data to its corresponding array.
 else:
     employeeLoginArray = readCSVto2DArray('EmployeeLoginDetails.csv')
 # end if
 
-if file_exists("SuperannuationRates.csv") == False:
+if file_exists("SuperannuationRates.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('SuperannuationRates.csv', 'a+')
     f.write("4")
     f.write("\n")
@@ -1624,12 +1629,12 @@ if file_exists("SuperannuationRates.csv") == False:
     f.write("\n")
     print("CREATED FILE: SuperannuationRates")
     f.close()
-    superannuationArray = readCSV2Array('SuperannuationRates.csv')
+    superannuationArray = readCSV2Array('SuperannuationRates.csv')       # assign the files data to its corresponding array.
 else:
     superannuationArray = readCSV2Array('SuperannuationRates.csv')
 # end if
 
-if file_exists("TaxRates.csv") == False:
+if file_exists("TaxRates.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('TaxRates.csv', 'a+')
     f.write("30")
     f.write("\n")
@@ -1637,12 +1642,12 @@ if file_exists("TaxRates.csv") == False:
     f.write("\n")
     print("CREATED FILE: TaxRates")
     f.close()
-    taxRatesArray = readCSV2Array('TaxRates.csv')
+    taxRatesArray = readCSV2Array('TaxRates.csv')       # assign the files data to its corresponding array.
 else:
     taxRatesArray = readCSV2Array('TaxRates.csv')
 # end if
 
-if file_exists("HealthInsurance.csv") == False:
+if file_exists("HealthInsurance.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('HealthInsurance.csv', 'a+')
     f.write("15")
     f.write("\n")
@@ -1652,12 +1657,12 @@ if file_exists("HealthInsurance.csv") == False:
     f.write("\n")
     print("CREATED FILE: HealthInsurance")
     f.close()
-    healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
+    healthInsuranceArray = readCSV2Array('HealthInsurance.csv')       # assign the files data to its corresponding array.
 else:
     healthInsuranceArray = readCSV2Array('HealthInsurance.csv')
 # end if
 
-if file_exists("RolePaymentRecord.csv") == False:
+if file_exists("RolePaymentRecord.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('RolePaymentRecord.csv', 'a+')
     f.write("Barista,23")
     f.write("\n")
@@ -1667,12 +1672,12 @@ if file_exists("RolePaymentRecord.csv") == False:
     f.write("\n")
     print("CREATED FILE: RolePaymentRecord")
     f.close()
-    rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
+    rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')       # assign the files data to its corresponding array.
 else:
     rolePaymentArray = readCSVto2DArray('RolePaymentRecord.csv')
 # end if
 
-if file_exists("EmployeeFile.csv") == False:
+if file_exists("EmployeeFile.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('EmployeeFile.csv', 'a+')
     f.write("1,Barista,4,15,False,MONDAY,0000,0000,0,0,0,0,0,0,0")
     f.write("\n")
@@ -1684,18 +1689,18 @@ if file_exists("EmployeeFile.csv") == False:
     f.write("\n")
     print("CREATED FILE: EmployeeFile")
     f.close()
-    EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
+    EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')       # assign the files data to its corresponding array.
 else:
     EmployeeDetailsArray = readCSVto2DArray('EmployeeFile.csv')
 # end if
 
-if file_exists("PaymentFile.csv") == False:
+if file_exists("PaymentFile.csv") == False:    # if the file does not exist, create it and add example data.
     f = open('PaymentFile.csv', 'a+')
     f.write("ID,GNAME,SNAME,ROLE,TRATE,SUPER,HLTH,MON,TUE,WED,THU,FRI,SAT,SUN,NHRS,OHRS,GROSS,SDED,HDED,TAX,NETT")
     f.write("\n")
     print("CREATED FILE: PaymentFile")
     f.close
-    PaymentArray = readCSVto2DArray('PaymentFile.csv')
+    PaymentArray = readCSVto2DArray('PaymentFile.csv')       # assign the files data to its corresponding array.
 else:
     PaymentArray = readCSVto2DArray('PaymentFile.csv')
 # end if
@@ -1729,11 +1734,11 @@ display_ClerkEmployeeOptions_loop = True
 
 while display_Navigation_Loop == False:
     display_Navigation_Loop == False
-    if Display_Navigation() == 't':
-        clearconsole()
+    if Display_Navigation() == 't':         # check if the test mode has been selected.
+        clearconsole()  # clears the screen.
         #VARIABLES
         fileFound = False
-        # tax array
+        # tax array             # every array is initialised, with a found item set to false, a position counter, a file size, an entity holder.
         sameTaxFound = False
         taxPos = 0
         taxFileSize = 0
@@ -1760,103 +1765,103 @@ while display_Navigation_Loop == False:
         # other variables
         testWhileCounter = 0
         personFileLength = 0
-        TestDetailsSubArray = [None]*15             # "4,Barista,8,25,False,MONDAY,0000,0000,0,0,0,0,0,0,0"
+        TestDetailsSubArray = [None]*15
         TestLoginSubArray = [None]*3
         employeeIDCounter = 0
         while fileFound == False:
-            fileToBeRead = input("| Please input the name of the file to be read: ")
-            if file_exists(str(fileToBeRead)) == True:
+            fileToBeRead = input("| Please input the name of the file to be read: ")   # prompts user to input a file to be found.
+            if file_exists(str(fileToBeRead)) == True:          # checks if the file exists.
                 fileFound = True
             else:
                 print("|")
-                print("| ERROR: File could not be found")
+                print("| ERROR: File could not be found")       # if it doesn't, throw an error, and prompt for a file name.
                 print("|")
             # end if
         # end while
-        FileArray = readCSVto2DArray(str(fileToBeRead))
-        personFileLength = ArrayLengthCalculator(FileArray)
+        FileArray = readCSVto2DArray(str(fileToBeRead))        # setup an array that has all the information in it.
+        personFileLength = ArrayLengthCalculator(FileArray)    # Find the size of the personFile.
         for item in FileArray:
-            if str(item[2]).lower() == 'Administator':
+            if str(item[2]).lower() == 'Administator':       # Loop through the test file to find Administrators and change the role to a 'Clerk'
                 item[2] = 'Clerk'
             # end if
             for tax in TestTaxArray:
-                if item[3] == tax:
-                    sameTaxFound = True
+                if item[3] == tax:          # checks if the tax has already been mentioned in the TaxArray.
+                    sameTaxFound = True     # if it has been identified set it to true.
                 # end if
             # end for
-            if sameTaxFound == False:
+            if sameTaxFound == False:       # if the same tax has not been found increment the file size to accommodate the new tax.
                 taxFileSize = taxFileSize + 1
             # end if
-            for super in TestSuperArray:
-                if item[4] == super:
+            for super in TestSuperArray:    # checks if the super has already been mentioned in the SuperArray.
+                if item[4] == super:        # if it has been identified set it to true.
                     sameSuperFound = True
                 # end if
             # end for
-            if sameSuperFound == False:
+            if sameSuperFound == False:     # if the same super has not been found increment the file size to accommodate the new super rate.
                 testSuperArrayLength = testSuperArrayLength + 1
             # end if
-            for health in TestHealthArray:
-                if item[5] == health:
+            for health in TestHealthArray:      # checks if the health plan has already been mentioned in the HealthArray.
+                if item[5] == health:           # if it has been identified set it to true.
                     sameHealthFound = True
                 # end if
             # end for
-            if sameHealthFound == False:
+            if sameHealthFound == False:     # if the same health plan has not been found increment the file size to accommodate the new health plan.
                 testHealthArrayLength = testHealthArrayLength + 1
             # end if
         # end for
-        TestTaxArray = [None]*taxFileSize
+        TestTaxArray = [None]*taxFileSize                   # setup the arrays.
         TestSuperArray = [None]*testSuperArrayLength
         TestHealthArray = [None]*testHealthArrayLength
         for item in FileArray:
-            for tax in TestTaxArray:
+            for tax in TestTaxArray:        # loop through the taxes array to find a tax that is not duplicated
                 if item[3] == tax:
                     sameTaxFound = True
                 else:
-                    taxHolder = item[3]
+                    taxHolder = item[3]     # When there is a unique tax rate, place it in the holder.
                 # end if
             # end for
             if sameTaxFound == False:
-                TestTaxArray[taxPos] = taxHolder
+                TestTaxArray[taxPos] = taxHolder    # If the same tax found is still false then set the new tax rate to the array.
             # end if
             taxPos = taxPos + 1
         # end for
         for item in FileArray:
-            for super in TestSuperArray:
+            for super in TestSuperArray:         # loop through the super array to find a super that is not duplicated
                 if item[4] == super:
                     sameSuperFound = True
                 else:
-                    superHolder = item[4]
+                    superHolder = item[4]       # When there is a unique super rate, place it in the holder.
                 # end if
             # end for
             if sameSuperFound == False:
-                TestSuperArray[superPos] = superHolder
+                TestSuperArray[superPos] = superHolder      # If the same super found is still false then set the new super rate to the array.
             # end if
             superPos = superPos + 1
         # end for
         for item in FileArray:
-            for health in TestHealthArray:
+            for health in TestHealthArray:      # loop through the health array to find a health plan that is not duplicated
                 if item[5] == health:
                     sameHealthFound = True
                 else:
-                    healthHolder = item[5]
+                    healthHolder = item[5]      # When there is a unique health plan, place it in the holder.
                 # end if
             # end for
             if sameHealthFound == False:
-                TestHealthArray[healthPos] = healthHolder
+                TestHealthArray[healthPos] = healthHolder       # If the same health plan found is still false then set the new health plan to the array.
             # end if
             healthPos = healthPos + 1
         # end for
         for item in FileArray:
-            loginArrayLength = loginGuesses + 1
-            testEmployeeDetailsArrayLength = testEmployeeDetailsArrayLength + 1
-        # end for
-        TestLoginArray = [None]*loginArrayLength
-        TestEmployeeDetailsArray = [None]*testEmployeeDetailsArrayLength
+            loginArrayLength = loginArrayLength + 1         # loops through and increments to find the size of the array to be used for logins.
+            testEmployeeDetailsArrayLength = testEmployeeDetailsArrayLength + 1       # loops through and increments to find the size of
+        # end for                                                                     # the array to be used for testEmployeeDetailsArray.
+        TestLoginArray = [None]*loginArrayLength            # initialise the login array
+        TestEmployeeDetailsArray = [None]*testEmployeeDetailsArrayLength    # initialise the employee details array
         for item in FileArray:
-            TestLoginSubArray[0] = employeeIDCounter
+            TestLoginSubArray[0] = employeeIDCounter        # initialise the sub arrays for the login, with an ID, and the first and last name.
             TestLoginSubArray[1] = item[1]
             TestLoginSubArray[2] = item[2]
-            TestDetailsSubArray[0] = employeeIDCounter
+            TestDetailsSubArray[0] = employeeIDCounter      # setup the details array with the same setup as the interactive employee details array.
             TestDetailsSubArray[1] = item[2]
             TestDetailsSubArray[2] = item[4]
             TestDetailsSubArray[3] = item[5]
@@ -1871,12 +1876,12 @@ while display_Navigation_Loop == False:
             TestDetailsSubArray[12] = item[10]
             TestDetailsSubArray[13] = item[11]
             TestDetailsSubArray[14] = item[12]
-            TestLoginArray[employeeIDCounter] = TestLoginSubArray
-            TestEmployeeDetailsArray[employeeIDCounter] = TestDetailsSubArray
-            employeeIDCounter = employeeIDCounter + 1
+            TestLoginArray[employeeIDCounter] = TestLoginSubArray       # the login subarray is added to the login array.
+            TestEmployeeDetailsArray[employeeIDCounter] = TestDetailsSubArray   # the employee details subarray is added to the employee details array.
+            employeeIDCounter = employeeIDCounter + 1       # employeeID is incremented as each subArray is added.
         # end for
-        while testWhileCounter < personFileLength:
-            Display_EmployeePaymentScreen(EmployeeID=int(testWhileCounter+1),
+        while testWhileCounter < personFileLength:  # add each persons payment details to the file while the counter is less then the actual file length.
+            Display_EmployeePaymentScreen(EmployeeID=int(testWhileCounter+1),       # using the payment function to add payment details to the file.
                                           EmployeeDetailsArray=TestEmployeeDetailsArray,
                                           EmployeeDetailsFile=False,
                                           EmployeeLoginArray=TestLoginArray,
@@ -1888,15 +1893,15 @@ while display_Navigation_Loop == False:
                                           PaymentArray=PaymentArray,
                                           PaymentFile='PaymentFile.csv',
                                           TestingUse=True)
-            testWhileCounter = testWhileCounter + 1
+            testWhileCounter = testWhileCounter + 1     # increment the loop counter.
         # end while
-        clearconsole()
-    else:
-        clearconsole()
-        loginGuesses = 0
-        while loginGuesses < guessLimit:
-            loginOutput = Display_InteractiveLogin(array=employeeLoginArray, file='EmployeeLoginDetails.csv')
-            if loginOutput == False:
+        clearconsole()      # clear the screen.
+    else:       # this is the code for the interactive mode.
+        clearconsole()      # clears the screen.
+        loginGuesses = 0    # resets the login guesses of the user.
+        while loginGuesses < guessLimit:      # only allows the user to login if they have guesses left.
+            loginOutput = Display_InteractiveLogin(array=employeeLoginArray, file='EmployeeLoginDetails.csv')   # displays screen and holds the return value
+            if loginOutput == False:    # if the login is invalid, increment their guesses, decreas their guesses left, clear the screen and output an error.
                 loginGuesses = loginGuesses + 1
                 guessesLeft = guessesLeft - 1
                 clearconsole()
@@ -1904,24 +1909,24 @@ while display_Navigation_Loop == False:
                 print(incorrectGuessLeftString)
                 print("")
             else:
-                loginGuesses = guessLimit + 1
+                loginGuesses = guessLimit + 1   # otherwise surpass the guess limit, effectively completing the loop.
             # end if
         # end while
-        if loginGuesses == guessLimit:
+        if loginGuesses == guessLimit:  # if they failed all of theiir login guesses, display an error and exit the program.
             print("Account lockout: please contact administrator")
             time.sleep(3)
             exit()
         else:
-            clearconsole()
-            employeeID = loginOutput
+            clearconsole()  # otherwise move onto the next screen.
+            employeeID = loginOutput    # their employeeID is found in the previous function.
             specificEmployeeArray = EmployeeDetailsArray[FindCurrentEmployee(EmployeeID=loginOutput,
                                                                              array=EmployeeDetailsArray,
-                                                                             file='EmployeeFile.csv')]
-            while display_InteractiveClockIn_Return == False:
-                display_InteractiveClockIn_Return = False
-                employeeIDArrayPlacement = int(employeeID) - 1
-                if EmployeeDetailsArray[employeeIDArrayPlacement][1] != 'Clerk':
-                    if Display_InteractiveClockIn(EmployeeID=employeeID,
+                                                                             file='EmployeeFile.csv')]  # finds their details subarray
+            while display_InteractiveClockIn_Return == False:       # continues, only if the employee does not wish to return to a previous screen.
+                display_InteractiveClockIn_Return = False           # reset the loop variable value.
+                employeeIDArrayPlacement = int(employeeID) - 1      # finds the array position of the employeeID.
+                if EmployeeDetailsArray[employeeIDArrayPlacement][1] != 'Clerk':    # if they are not a clerk
+                    if Display_InteractiveClockIn(EmployeeID=employeeID,            # output the Clock in details screen.
                                                   LoginArray=employeeLoginArray,
                                                   LoginFile='EmployeeLoginDetails.csv',
                                                   EmployeeDetailsArray=EmployeeDetailsArray,
@@ -1933,27 +1938,27 @@ while display_Navigation_Loop == False:
                                         EmployeeDetailsArray=EmployeeDetailsArray,
                                         EmployeeDetailsFile='EmployeeFile.csv')
                         time.sleep(5)
-                        exit()
+                        exit()              # exit the program.
                     else:
-                        display_InteractiveClockIn_Return = True
-                else:
+                        display_InteractiveClockIn_Return = True        # if they wish to return, validate the loop.
+                else:   # this path is if they are a clerk
                     while display_ClerkOptions_loop == True:
                         display_ClerkOptions_loop = True
                         clearconsole()
-                        clerkOptionsReturn = Display_ClerkOptions(EmployeeID=employeeID,
+                        clerkOptionsReturn = Display_ClerkOptions(EmployeeID=employeeID,    # give the clerk options to select
                                                                   EmployeeLoginArray=employeeLoginArray,
                                                                   LoginFile='EmployeeLoginDetails.csv',
                                                                   EmployeeDetailsArray=EmployeeDetailsArray,
                                                                   EmployeeDetailsFile='EmployeeFile.csv')
-                        if clerkOptionsReturn == 'Payment':
+                        if clerkOptionsReturn == 'Payment':     # if they choose the payment option
                             while display_ClerkPaymentOptions_loop == True:
                                 display_ClerkPaymentOptions_loop = True
                                 clearconsole()
-                                clerkPaymentOptionsReturn = Display_ClerkPaymentOptions(EmployeeLoginArray=
+                                clerkPaymentOptionsReturn = Display_ClerkPaymentOptions(EmployeeLoginArray=         # show the payment options
                                                                                         employeeLoginArray,
                                                                                         LoginFile=
                                                                                         'EmployeeLoginDetails.csv')
-                                if clerkPaymentOptionsReturn != False:
+                                if clerkPaymentOptionsReturn != False:      # if they don't wish to return, show the payment screen
                                     clearconsole()
                                     Display_EmployeePaymentScreen(EmployeeID=clerkPaymentOptionsReturn,
                                                                   EmployeeDetailsArray=EmployeeDetailsArray,
@@ -1968,56 +1973,56 @@ while display_Navigation_Loop == False:
                                                                   PaymentFile='PaymentFile.csv',
                                                                   TestingUse=False)
                                 # end if
-                                display_ClerkPaymentOptions_loop = False
+                                display_ClerkPaymentOptions_loop = False    # validate all of the loops and clear the screen
                                 display_ClerkOptions_loop = False
                                 display_InteractiveClockIn_Return = True
                                 clearconsole()
-                        elif clerkOptionsReturn == 'Financial':
+                        elif clerkOptionsReturn == 'Financial':     # if the clerk chooses the financial path
                             while display_FinancialOptions_loop == True:
                                 display_FinancialOptions_loop = True
                                 clearconsole()
-                                display_FinancialOptions_return = Display_FinancialOptions()
+                                display_FinancialOptions_return = Display_FinancialOptions()    # show the financial options
                                 clearconsole()
-                                if display_FinancialOptions_return == 'TaxRates':
+                                if display_FinancialOptions_return == 'TaxRates':   # if they choose tax rates, show the tax rates screen
                                     Display_Financial_TaxRates(TaxRateArray=taxRatesArray,
                                                                TaxRatesFile='TaxRates.csv')
-                                elif display_FinancialOptions_return == 'Superannuation':
+                                elif display_FinancialOptions_return == 'Superannuation':   # if they choose superannuation rates, show the super rates screen
                                     Display_Financial_Superannuation(SuperArray=superannuationArray,
                                                                      SuperFile='SuperannuationRates.csv')
-                                elif display_FinancialOptions_return == 'HealthInsurance':
+                                elif display_FinancialOptions_return == 'HealthInsurance':      # if they choose health rates, show the health rates screen
                                     Display_Financial_HealthInsurance(HealthInsuranceArray=healthInsuranceArray,
                                                                       HealthFile='HealthInsurance.csv')
                                 else:
-                                    Display_Financial_PayRates(RolePaymentArray=rolePaymentArray,
+                                    Display_Financial_PayRates(RolePaymentArray=rolePaymentArray,   # otherwise show the pay rates as default.
                                                                RolePayFile='RolePaymentRecord.csv')
                                 # end if
-                                display_FinancialOptions_loop = False
+                                display_FinancialOptions_loop = False    # validate all of the loops and clear the screen
                                 display_ClerkOptions_loop = False
                                 display_InteractiveClockIn_Return = True
                                 clearconsole()
                             # end while
-                        elif clerkOptionsReturn == 'Employee':
+                        elif clerkOptionsReturn == 'Employee':  # if they choose the employee options
                             while display_ClerkEmployeeOptions_loop == True:
                                 display_ClerkEmployeeOptions_loop = True
                                 clearconsole()
                                 display_ClerkEmployeeOptions_return = Display_ClerkEmployeeOptions()
-                                if display_ClerkEmployeeOptions_return == 'Add':
-                                    Display_AddEmployee(EmployeeLoginArray=employeeLoginArray,
+                                if display_ClerkEmployeeOptions_return == 'Add':    # if they choose to add a new employee:
+                                    Display_AddEmployee(EmployeeLoginArray=employeeLoginArray,      # display the add employee options.
                                                          EmployeeDetailsArray=EmployeeDetailsArray,
                                                          EmployeeLoginFile='EmployeeLoginDetails.csv',
                                                          EmployeeDetailsFile='EmployeeFile.csv')
-                                elif display_ClerkEmployeeOptions_return == 'Remove':
-                                    Display_RemoveEmployee(EmployeeLoginArray=employeeLoginArray,
+                                elif display_ClerkEmployeeOptions_return == 'Remove':    # if they choose to remove a new employee:
+                                    Display_RemoveEmployee(EmployeeLoginArray=employeeLoginArray,   # display the remove employee options.
                                                          EmployeeDetailsArray=EmployeeDetailsArray,
                                                          EmployeeLoginFile='EmployeeLoginDetails.csv',
                                                          EmployeeDetailsFile='EmployeeFile.csv')
-                                else:
-                                    Display_EditEmployee(EmployeeLoginArray=employeeLoginArray,
+                                else:    # if they choose something else, display the edit option as a default
+                                    Display_EditEmployee(EmployeeLoginArray=employeeLoginArray,     # display the edit employee screen
                                                          EmployeeDetailsArray=EmployeeDetailsArray,
                                                          EmployeeLoginFile='EmployeeLoginDetails.csv',
                                                          EmployeeDetailsFile='EmployeeFile.csv')
                                 # end if
-                                display_ClerkEmployeeOptions_loop = False
+                                display_ClerkEmployeeOptions_loop = False   # validate all of the loops and clear the screen
                                 display_ClerkOptions_loop = False
                                 display_InteractiveClockIn_Return = True
                                 clearconsole()
