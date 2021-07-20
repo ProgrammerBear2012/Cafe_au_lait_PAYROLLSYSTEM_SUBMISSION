@@ -27,33 +27,34 @@ from random import randint
 # (4) healthInsurance
 # (5) rolePayment
 # (6) employeeFile
+# (7) Payment
 
 # ======================================================================================================================
 #                                                  ALGORITHMIC FUNCTIONS                                               #
 # ======================================================================================================================
 
-def ArrayLengthCalculator(array):
-    length = 0
+def ArrayLengthCalculator(array): # Takes in array parameter, loops through each item and increases the counter by 1,
+    length = 0                     # then returns the length of the array.
     for entities in array:
         length = length + 1
     return length
     # end for
 # end def
 
-def isInt(number):
-    if number - int(number) == 0:
+def isInt(number):          # checks if the number is an integer number by returning true when the number
+    if number - int(number) == 0:     # can be subtracted by itself to equal 0
         return True
     else:
         return False
     # end if
 # end def
 
-def clearconsole():
+def clearconsole(): # clears the screen
     os.system('cls' if os.name == 'nt' else 'clear')
 # end def
 
-def file_exists(filename):
-    result = os.path.isfile(filename)
+def file_exists(filename): # takes a parameter of the file name and will return true or
+    result = os.path.isfile(filename) # false depending on whether the file can be found or not.
     return result
 # end def
 
@@ -74,8 +75,8 @@ def writeList2CSVFile(listObject, fileObject):
     # end for
 # end def
 
-def readCSVline2List(fileLineString):
-    listObject = fileLineString.split(",")
+def readCSVline2List(fileLineString):  # takes in a line and splits it into an array style object.
+    listObject = fileLineString.split(",") # adds commas between each item.
     return listObject
 # end def
 
@@ -92,16 +93,16 @@ def readCSVline2List(fileLineString):
 def convertListToArray(list):
     pos = 0
     arrayLength = 0
-    outputArray = [None]
-    for item in list:
+    outputArray = [None] # output array is initialised
+    for item in list: # for every item found, increment the array length by 1
         arrayLength = arrayLength + 1
     # end for
-    outputArray = [None]*arrayLength
-    for item in list:
+    outputArray = [None]*arrayLength # extend the initialised output array to the length of the list
+    for item in list: # add every item back into the array, but converted into a string.
         outputArray[pos] = str(list[pos])
         pos = pos + 1
     # end for
-    return outputArray
+    return outputArray # return the converted array
 # end def
 
 def readCSV2Array(filename):
@@ -118,13 +119,13 @@ def readCSV2Array(filename):
     return myRecord_Array
 # end def
 
-def convertListTo2DArray(list_of_lists):
+def convertListTo2DArray(list_of_lists): # takes 2 dimensional list
     arrayPos = 0
     subItemPos = 0
-    listPos = 0
     arrayLength = 0
     subArrayLength = 0
-    outputArray = [None]
+    outputArray = [None] # output array initialised
+    subArray = [None] # subArray output initialised.
     for list in list_of_lists:
         arrayLength = arrayLength + 1
     # end for
@@ -174,7 +175,7 @@ def readCSVto2DArray(filename):
     return myRecord_Array
 # end def
 
-def FindCurrentEmployee(EmployeeID, array, file):
+def FindCurrentEmployee(EmployeeID, file):
     array = readCSVto2DArray(file)
     arrayCounter = 0
     for employees in array:
