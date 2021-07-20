@@ -2,7 +2,7 @@
 # Program Name: CafeAuLait_PayrollSystem_Submission.py
 # Author:       Uzziah Smith
 # Purpose:      Allows employees to clock in and out, calculates and pays employees and holds company information.
-# Version:      3.0   (increment the decimal every editing session. Increment integer every major feature milestone)
+# Version:      3.12   (increment the decimal every editing session. Increment integer every major feature milestone)
 # Last Revison: 20210630_1901 date format
 # Dependencies: (1)os - note any libraries, APIs etc used by the code in this file
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -691,7 +691,7 @@ def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, Emp
     employeeFirstName = LoginArray[int(EmployeeID)][1]
     employeeLastName = LoginArray[int(EmployeeID)][2]
     status = None
-    if CurrentEmployeeArray[4] == True:
+    if CurrentEmployeeArray[4] == True:     # finds the status of the employee and prints a message that corresponds.
         status = 'Shift in progress'
     else:
         status = 'Not on shift'
@@ -699,18 +699,18 @@ def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, Emp
     Header(SystemHeader="Interactive: Employee",
            HeaderMessage="Have a good day employee: " + employeeFirstName + " " + employeeLastName)
     print("| ")
-    print("| Status: " + status)
+    print("| Status: " + status)        # prints the status to screen and the clock day.
     print("| ")
     print("| Day: " + CurrentEmployeeArray[5])
     print("| ")
     if CurrentEmployeeArray[4] == True:
-        print("| Time:  " + CurrentEmployeeArray[6])
+        print("| Time:  " + CurrentEmployeeArray[6])        # prints the time and 'shift in progress' if they have clocked in.
         print("| ")
         print("| Hours: Shift in progress")
         print("| ")
         print("-----------------------------------------------------------")
     else:
-        print("| Time:  " + CurrentEmployeeArray[7])
+        print("| Time:  " + CurrentEmployeeArray[7])        # when clocking out their clockout time will be displayed alongside the hours they worked.
         print("| ")
         print("| Hours:  " + str(TimeCalculator(ClockInTime=CurrentEmployeeArray[6], ClockOutTime=CurrentEmployeeArray[7])))
         print("| ")
@@ -719,10 +719,10 @@ def Display_Clockin(EmployeeID, LoginArray, LoginFile, EmployeeDetailsArray, Emp
 # end def
 
 def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, LoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
-    EmployeeLoginArray = readCSVto2DArray(LoginFile)
+    EmployeeLoginArray = readCSVto2DArray(LoginFile)    # update the arrays
     EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     specificEmployee = int(EmployeeID) - 1
-    employeeFirstName = EmployeeLoginArray[specificEmployee][1]
+    employeeFirstName = EmployeeLoginArray[specificEmployee][1]     # find the employee's name.
     employeeLastName = EmployeeLoginArray[specificEmployee][2]
     ClerkSelection = ''
     Header(SystemHeader="Interactive: Clerk",
@@ -732,33 +732,33 @@ def Display_ClerkOptions(EmployeeID, EmployeeLoginArray, LoginFile, EmployeeDeta
     ClerkSelection = input("| User input:")
     print("| ")
     if Footer() == True:
-        if ClerkSelection.lower() == 'p':
+        if ClerkSelection.lower() == 'p':   # if the clerk chooses 'p' they will get the payment screen.
             return 'Payment'
-        elif ClerkSelection.lower() == 'f':
+        elif ClerkSelection.lower() == 'f':     # if the clerk chooses 'f' they will get the financial screen
             return 'Financial'
         else:
-            return 'Employee'
+            return 'Employee'       # if they don't choose 'p' or 'f' they will get the default screen of employee.
         # end if
     # end if
 # end def
 
 def Display_ClerkPaymentOptions(EmployeeLoginArray, LoginFile):
-    EmployeeLoginArray = readCSVto2DArray(LoginFile)
+    EmployeeLoginArray = readCSVto2DArray(LoginFile)    # updates the array
     clerkPaymentEmployeeID = ''
-    employeeFound = False
+    employeeFound = False   # validation
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Payment")
     print("| ")
     clerkPaymentEmployeeID = input("| Enter employee ID: ")
     print("| ")
     if Footer() == True:
-        while employeeFound == False:
+        while employeeFound == False:   # checks if the employee is real, if not it throws an error and request the correct ID
             if FindCurrentEmployee(EmployeeID=clerkPaymentEmployeeID, array=EmployeeLoginArray, file=LoginFile) == False:
                 print("ERROR! Invalid employee")
                 print("Please input a valid employee ID")
                 clerkPaymentEmployeeID = input("| Enter employee ID: ")
                 print("| ")
             else:
-                employeeFound = True
+                employeeFound = True    # if the employeeID is valid, return it.
                 return clerkPaymentEmployeeID
             # end if
         # end while
@@ -773,12 +773,12 @@ def Display_ClerkEmployeeOptions():
     clerkSelection = input("| [A]dd / [R]emove / [E]dit Employee(default): ")
     print("| ")
     if Footer() == True:
-        if clerkSelection.lower() == 'a':
+        if clerkSelection.lower() == 'a':       # if 'a' is selected, display the add employee screen.
             return 'Add'
-        elif clerkSelection.lower() == 'r':
+        elif clerkSelection.lower() == 'r':     # if 'r' is selected, display the remove employee screen.
             return 'Remove'
         else:
-            return 'Edit'
+            return 'Edit'       # if neither selection is made, disaply the edit employee screen.
         # end if
     # end if
     return False
@@ -786,7 +786,7 @@ def Display_ClerkEmployeeOptions():
 
 
 def Display_AddEmployee(EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsArray, EmployeeDetailsFile):
-    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)        # updates the arrays
     EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     newEmployeeID = ''
     newEmployeePass = ''
@@ -797,9 +797,9 @@ def Display_AddEmployee(EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsAr
     employeeSuperannuation = ''
     employeeHealthInsurance = ''
     employeeRoleValidation = False
-    outputArray = [None]*2
-    newEmployeeLoginArray = [None]*4
-    newEmployeeDetailsArray = [None]*15
+    outputArray = [None]*2      # output array contains the Login array and details array.
+    newEmployeeLoginArray = [None]*4    # contains the four slots needed for EmployeeID, FirstName, LastName and Password
+    newEmployeeDetailsArray = [None]*15     # contains the 15 positions needed for all details.
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Add Employee")
     print("| ")
     print("| Enter employee's details")
@@ -820,19 +820,19 @@ def Display_AddEmployee(EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsAr
     Footer()
     if Footer() == True:
         while employeeRoleValidation == False:
-            employeeRole = ValidateRole(employeeRole)
+            employeeRole = ValidateRole(employeeRole)   # checks if the role inputted is a real role.
             if employeeRole == False:
-                print("ERROR INVALID ROLE")
+                print("ERROR INVALID ROLE")     # they don't select a correct role, then an error is thrown.
                 print("Please input valid role: ")
                 employeeRole = input("| [M]anager / [C]lerk / [B]arista (default) :: ")
             else:
-                employeeRoleValidation = True
+                employeeRoleValidation = True   # validate the loop
             # end if
         # end while
-        newEmployeeHourlyRate = FindPaymentForRole(employeeRole)
-        newEmployeeID = GenerateEmployeeID()
-        newEmployeePass = GenerateEmployeePass(EmployeeLoginArray=EmployeeLoginArray, Role=employeeRole)
-        newEmployeeDetailsArray[0] = newEmployeeID
+        newEmployeeHourlyRate = FindPaymentForRole(employeeRole)    # finds the hourly rate for the inputted role.
+        newEmployeeID = GenerateEmployeeID()    # generates a correct employeeID for the new employee.
+        newEmployeePass = GenerateEmployeePass(EmployeeLoginArray=EmployeeLoginArray, Role=employeeRole)    # Generates a correct password
+        newEmployeeDetailsArray[0] = newEmployeeID   # adds all needed details and initialised details to the new Employee Details Array.
         newEmployeeDetailsArray[1] = employeeRole
         newEmployeeDetailsArray[2] = employeeSuperannuation
         newEmployeeDetailsArray[3] = employeeHealthInsurance
@@ -847,27 +847,27 @@ def Display_AddEmployee(EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsAr
         newEmployeeDetailsArray[12] = '0'
         newEmployeeDetailsArray[13] = '0'
         newEmployeeDetailsArray[14] = '0'
-        newEmployeeLoginArray[0] = newEmployeeID
+        newEmployeeLoginArray[0] = newEmployeeID    # adds all login details to the new details array.
         newEmployeeLoginArray[1] = employeeGivenName
         newEmployeeLoginArray[2] = employeeSurname
         newEmployeeLoginArray[3] = employeeRole
-        EmployeeLoginArray.append(newEmployeeLoginArray)
-        EmployeeDetailsArray.append(newEmployeeDetailsArray)
-        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)
+        EmployeeLoginArray.append(newEmployeeLoginArray)    # adds the newEmployeeLoginArray to the actual login array.
+        EmployeeDetailsArray.append(newEmployeeDetailsArray)    # adds the newEmployeeDetailsArray to the actual details array.
+        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile) # adds arrays to their files.
         TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
-        print("-----------------------------------------------------------")
+        print("-----------------------------------------------------------")    # prints out the new Employee log in details.
         print("| ")
         print("| Generated Employee ID: " + newEmployeeID)
         print("| ")
         print("| Generated Employee Password: " + newEmployeePass)
         print("| ")
         print("-----------------------------------------------------------")
-        return outputArray
+        return outputArray  # outputs the two new arrays.
     # end if 
 # end def
 
 def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLoginFile, EmployeeDetailsFile):
-    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)        # updates arrays
     EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     employeeIDtoRemove = ''
     clerkID = ''
@@ -875,7 +875,7 @@ def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLog
     employeePos = 0
     employeeFoundValidation = False
     clerkLoginValidation = False
-    if file_exists(EmployeeLoginFile) == False:
+    if file_exists(EmployeeLoginFile) == False:         # checks if the login and employee details files exists
         print("ERROR: EmployeeLoginFile Invalid")
         return False
     # end if
@@ -894,51 +894,52 @@ def Display_RemoveEmployee(EmployeeDetailsArray, EmployeeLoginArray, EmployeeLog
     clerkPassword = input("| Clerk - Password:")
     print("| ")
     if Footer() == True:
-        while employeeFoundValidation == False:
-            if FindCurrentEmployee(EmployeeID=employeeIDtoRemove, array=EmployeeLoginArray, file=EmployeeLoginFile) == 'False':
+        while employeeFoundValidation == False:     # checks if the employee exists, if they don't throw an error and re-request employee details.
+            if FindCurrentEmployee(EmployeeID=employeeIDtoRemove, array=EmployeeLoginArray, file=EmployeeLoginFile) == \
+                    False:
                 print("ERROR EMPLOYEE NOT FOUND!")
                 print(" ")
-                employeeIDtoRemove = input("| Enter Valid Employee: ")
+                employeeIDtoRemove = input("| Enter Valid Employee: ")      # prompts an EmployeeID to remove an employee
             else:
-                employeeFoundValidation = True
+                employeeFoundValidation = True      # Validates the loop
             # end if
         # end while
-        while clerkLoginValidation == False:
+        while clerkLoginValidation == False:    # checks if the clerk has relogged in.
             clerkID = str(clerkID)
             clerkPassword = str(clerkPassword)
-            for employee in EmployeeLoginArray:
+            for employee in EmployeeLoginArray:     # checks the clerks details against the employee array.
                 if employee[0] == clerkID and employee[3] == clerkPassword:
                     clerkLoginValidation = True
                 # end if
             # end for
-            if clerkLoginValidation == False:
+            if clerkLoginValidation == False:       # if the clerk details are invalid then throw an error and request new clerk details.
                 print("ERROR CLERK NOT FOUND!")
                 clerkID = input("| Enter Valid Clerk - ID: ")
                 print("|")
                 clerkPassword = input("| Enter Valid Clerk - Password: ")
             # end if
-        EmployeeLoginArray.delete(int(employeeID)-1)
+        EmployeeLoginArray.delete(int(employeeID)-1)        # delete the employee at their employeeID (deleting login and details)
         EmployeeDetailsArray.delete(int(employeeID)-1)
-        employeePos = int(employeeID)-1
-        for employee in EmployeeLoginArray:
+        employeePos = int(employeeID)-1     # reset the employee position to the max array
+        for employee in EmployeeLoginArray:     # reset all of the employeeID's
             employee[employeePos][0] = str(int(employeeID) - 1)
             employeePos = employeePos + 1
         # end for
         employeePos = int(employeeID) - 1
-        for employee in EmployeeDetailsArray:
+        for employee in EmployeeDetailsArray:   # reset all of the employeeID's
             employee[employeePos][0] = str(int(employeeID) - 1)
             employeePos = employeePos + 1
         # end for
-        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)
+        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)         # upload the arrays to the files.
         TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
-        return True
+        return True     # if action has been taken, return True
         # end while
     # end if
-    return False
+    return False        # if no action was taken, return False.
 # end def
 
 def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLoginFile, EmployeeDetailsFile):
-    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)
+    EmployeeLoginArray = readCSVto2DArray(EmployeeLoginFile)        # update the arrays
     EmployeeDetailsArray = readCSVto2DArray(EmployeeDetailsFile)
     EmployeeArray = []
     employeeID = ''
@@ -949,8 +950,8 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
     roleValidation = False
     superValidation = False
     healthInsuranceValidation = False
-    if file_exists(EmployeeLoginFile) == False:
-        print("ERROR: EmployeeLoginFile Invalid")
+    if file_exists(EmployeeLoginFile) == False:             # check if the files exist for employee login, and details
+        print("ERROR: EmployeeLoginFile Invalid")           # if they don't exist then return False, cutting the function short.
         return False
     # end if
     if file_exists(EmployeeDetailsFile) == False:
@@ -973,70 +974,70 @@ def Display_EditEmployee(EmployeeLoginArray, EmployeeDetailsArray, EmployeeLogin
     employeeHealthInsurance = input("| [A]ncillery / [SU]perior / [ST]andard(default): ")
     print("| ")
     if Footer() == True:
-        while employeeFoundValidation == False:
+        while employeeFoundValidation == False:     # checks for the employee, if they can't be found, request a new ID after throwing an error.
             if FindCurrentEmployee(EmployeeID=employeeID, array=EmployeeLoginArray, file=EmployeeLoginFile) == False:
                 print("ERROR: PLEASE DO NOT EDIT EMPLOYEE ID")
                 employeeID = input("| Café - Au - Lait - ID: ")
             else:
-                employeeFoundValidation = True
+                employeeFoundValidation = True      # validate the loop
             # end if
         # end while
         while roleValidation == False:
             if employeeRole.lower() != 'b' and employeeRole.lower() != 'm' and employeeRole.lower() != 'c':
-                print("ERROR: PLEASE INPUT A VALID ROLE")
-                print("| Role")
+                print("ERROR: PLEASE INPUT A VALID ROLE")       # checks if a valid role has been chosen, if not throw an error
+                print("| Role")                                 # request a new role selection.
                 employeeRole = input("| [B]arista / [M]anager / [C]lerk: ")
             else:
-                if str(employeeRole).lower() == 'b':
+                if str(employeeRole).lower() == 'b':    # assign the correct role chosen to employeeRole.
                     employeeRole = 'Barista'
                 elif str(employeeRole).lower() == 'm':
                     employeeRole = 'Manager'
                 else:
                     employeeRole = 'Clerk'
                 # end if
-                roleValidation = True
+                roleValidation = True       # validate the role loop
             # end if
         # end while
         while superValidation == False:
             if str(employeeSuperannuation) != '1' and str(employeeSuperannuation) != '2' and \
-                    str(employeeSuperannuation) != '3':
-                print("ERROR: PLEASE INPUT A VALID SUPERANNUATION PLAN")
+                    str(employeeSuperannuation) != '3':     # checks if a valid super rate has been selected
+                print("ERROR: PLEASE INPUT A VALID SUPERANNUATION PLAN")        # throws an error
                 print("| Superannuation")
-                employeeSuperannuation = input("| [1]4% / [2]6% / [3]8%: ")
+                employeeSuperannuation = input("| [1]4% / [2]6% / [3]8%: ")     # request a new super selection
             else:
-                if str(employeeSuperannuation) == '1':
+                if str(employeeSuperannuation) == '1':   # assigns the super rate that corresponds to the clerks choice.
                     employeeSuperannuation = 4
                 elif str(employeeSuperannuation) == '2':
                     employeeSuperannuation = 6
                 elif str(employeeSuperannuation) == '3':
                     employeeSuperannuation = 8
                 # end if
-                superValidation = True
+                superValidation = True      # validate the super loop
             # end if
         # end while
         while employeeHealthInsurance == False:
             if employeeHealthInsurance.lower() != 'a' and employeeHealthInsurance.lower() != 'st' and \
-                    employeeHealthInsurance != 'su':
-                print("ERROR: PLEASE INPUT A VALID HEALTH INSURANCE PLAN")
+                    employeeHealthInsurance != 'su':        # checks if a valid health plan has been chosen
+                print("ERROR: PLEASE INPUT A VALID HEALTH INSURANCE PLAN")      # if not, it throws an error.
                 print("| Health Insurance")
-                employeeHealthInsurance = input("| [A]ncillery / [SU]perior / [ST]andard(default): ")
+                employeeHealthInsurance = input("| [A]ncillery / [SU]perior / [ST]andard(default): ")      # request a new choice.
             else:
-                if str(employeeHealthInsurance).lower() == 'a':
+                if str(employeeHealthInsurance).lower() == 'a':         # assigns the correct health deduction cost to the choice of health plan.
                     employeeHealthInsurance = 15
                 elif str(employeeHealthInsurance).lower() == 'st':
                     employeeHealthInsurance = 25
                 else:
                     employeeHealthInsurance = 45
                 # end if
-                employeeHealthInsurance = True
+                employeeHealthInsurance = True      # validates the health plan loop.
             # end if
         # end while
-        EmployeeLoginArray[int(employeeID)-1][1] = employeePassword
-        EmployeeDetailsArray[int(employeeID)-1][1] = employeeRole
+        EmployeeLoginArray[int(employeeID)-1][1] = employeePassword     # adds all the changed data to the login array.
+        EmployeeDetailsArray[int(employeeID)-1][1] = employeeRole       # adds all the changed data to the details array.
         EmployeeDetailsArray[int(employeeID)-1][2] = employeeSuperannuation
         EmployeeDetailsArray[int(employeeID)-1][3] = employeeHealthInsurance
-        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)
-        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile)
+        TwoDimensionalArrayToFile(array=EmployeeLoginArray, file=EmployeeLoginFile)     # adds the changed arrays to
+        TwoDimensionalArrayToFile(array=EmployeeDetailsArray, file=EmployeeDetailsFile) # their respective files.
     # end if
     return True
 # end def
@@ -1074,53 +1075,53 @@ def Display_Financial_TaxRates(TaxRateArray, TaxRatesFile):
     taxRatePrintStringBegin = " | Tax rates: "
     taxRatePrintStringEnd = ''
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Tax Adjustment")
-    for item in TaxRateArray:
+    for item in TaxRateArray:   # print out each tax rate in the tax rate array
         taxRatePrintStringEnd = taxRatePrintStringEnd + "[" + str(loopCounter) + "]" + TaxRateArray[loopCounter-1] + \
                                 " % " + ", "
-        loopCounter = loopCounter + 1
+        loopCounter = loopCounter + 1       # increment the loop counter.
     # end for
     print("| ")
     print(taxRatePrintStringBegin + taxRatePrintStringEnd)
     print("| ")
-    taxRateToBeDeleted = input("| Delete tax rate: // using options 1, 2, 3 etc.")
-    print("| ")
-    taxRateToBeAdded = input("| Add tax rate: // using number without percentage tag")
-    print("| ")
+    taxRateToBeDeleted = input("| Delete tax rate: // using options 1, 2, 3 etc, or next to skip")       # using the position of the tax rate
+    print("| ")                                                                                          # the clerk chooses a tax rate to be deleted
+    taxRateToBeAdded = input("| Add tax rate: // using number without percentage tag, or next to skip")  # using the value of the tax rate
+    print("| ")                                                                                          # the clerk chooses a tax rate to be added.
     if Footer() == True:
         while deletionValidation == False:
-            if deletionValidation.isnumeric() == False:
-                if deletionValidation.lower() == 'next':
-                    deletionValidation = True
+            if deletionValidation.isnumeric() == False:     # if the inputted delete value is not a number
+                if deletionValidation.lower() == 'next':    # check if they have used the next option
+                    deletionValidation = True               # if they have exit the delete loop
                 else:
-                    print("ERROR INVALID TAX RATE: NOT ON Array")
-                    taxRateToBeDeleted = input("Please input a valid tax rate to be deleted:")
-            elif ArrayValidationAndDeletion(SpecificValueToBeDeleted=taxRateToBeDeleted, Array=TaxRateArray,
+                    print("ERROR INVALID TAX RATE: NOT ON Array")       # otherwise throw an error
+                    taxRateToBeDeleted = input("Please input a valid tax rate to be deleted:")      # request a new input
+            elif ArrayValidationAndDeletion(SpecificValueToBeDeleted=taxRateToBeDeleted, Array=TaxRateArray,    # otherwise check if the number is on file
                                           File=TaxRatesFile) == False:
-                print("ERROR INVALID TAX RATE: NOT ON Array")
-                taxRateToBeDeleted = input("Please input a valid tax rate to be deleted:")
+                print("ERROR INVALID TAX RATE: NOT ON Array")       # if it is not print an error
+                taxRateToBeDeleted = input("Please input a valid tax rate to be deleted:")          # request a new input
             else:
-                deletionValidation = True
+                deletionValidation = True       # validate the loop
             # end if
         # end while
         while additionValidation == False:
-            if taxRateToBeAdded.isnumeric() == False:
-                if taxRateToBeAdded.lower() == 'next':
-                    additionValidation = True
+            if taxRateToBeAdded.isnumeric() == False:       # if the inputted data is not a number
+                if taxRateToBeAdded.lower() == 'next':      # if next is inputted then
+                    additionValidation = True               # validate the loop
                 else:
-                    print("ERROR INVALID TAX RATE: INVALID INTEGER ENTRY")
-                    taxRateToBeAdded = input("Please input a valid tax rate, using an integer without a "
+                    print("ERROR INVALID TAX RATE: INVALID INTEGER ENTRY")      # if they did not choose next then throw an error
+                    taxRateToBeAdded = input("Please input a valid tax rate, using an integer without a "   # request new data
                                              "percentage sign: ")
-            elif ArrayValidationAndAddition(SpecificValueToBeAdded=taxRateToBeAdded, Array=TaxRateArray,
+            elif ArrayValidationAndAddition(SpecificValueToBeAdded=taxRateToBeAdded, Array=TaxRateArray,    # check if the deletion was valid
                                                             File=TaxRatesFile) == False:
-                print("ERROR INVALID TAX RATE: INVALID INTEGER ENTRY")
+                print("ERROR INVALID TAX RATE: INVALID INTEGER ENTRY")      # otherwise, throw an error, and request new input
                 taxRateToBeAdded = input("Please input a valid tax rate, using an integer without a percentage sign: ")
             else:
-                additionValidation = True
+                additionValidation = True   # validate the loop.
             # end if
         # end while
-        return True
+        return True     # if action was taken return true
     # end if
-    return False
+    return False        # if no action was taken return false
 # end def
 
 def Display_Financial_Superannuation(SuperArray, SuperFile):
@@ -1133,56 +1134,57 @@ def Display_Financial_Superannuation(SuperArray, SuperFile):
     deletionValidation = False
     additionValidation = False
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Superannuation Adjustment")
-    for item in SuperArray:
+    for item in SuperArray:     # print out each super rate in the super array
         superprintStringEnd = superprintStringEnd + "[" + str(loopCounter) + "]" + "$" + SuperArray[loopCounter-1] + \
                               ", "
-        loopCounter = loopCounter + 1
+        loopCounter = loopCounter + 1   # increment the loop counter
     # end for
     print("|")
-    print(superprintStringBegin + superprintStringEnd)
+    print(superprintStringBegin + superprintStringEnd)      # print the constructed array
     print("| ")
-    print("| Delete Superannuation Rate: // using options 1, 2, 3 etc. or 'next' to skip")
-    superToBeDeleted = input(":: ")
-    print("|")
-    print("| Add Superannuation: // using number without percentage tag or use 'next' to skip")
+    print("| Delete Superannuation Rate: // using options 1, 2, 3 etc. or 'next' to skip")   # using the position of the super rate
+    superToBeDeleted = input(":: ")                                                          # the clerk chooses a super rate to be deleted
+    print("|")                                                                               # using the value of the super rate
+    print("| Add Superannuation: // using number without percentage tag or use 'next' to skip")  # the clerk chooses a super rate to be added.
     superToBeAdded = input(":: ")
     print("|")
     if Footer() == True:
         while deletionValidation == False:
-            if superToBeDeleted.isnumeric() == False:
-                if superToBeDeleted.lower() == 'next':
-                    deletionValidation = True
+            if superToBeDeleted.isnumeric() == False:   # if the inputted delete value is not a number
+                if superToBeDeleted.lower() == 'next':  # check if they have used the next option
+                    deletionValidation = True           # if they have exit the delete loop
                 else:
-                    print("ERROR INVALID SUPERANNUATION RATE: NOT ON Array")
-                    superToBeDeleted = input("Please input a valid superannuation rate to be deleted: ")
-            elif ArrayValidationAndDeletion(SpecificValueToBeDeleted=superToBeDeleted,
+                    print("ERROR INVALID SUPERANNUATION RATE: NOT ON Array")    # otherwise throw an error
+                    superToBeDeleted = input("Please input a valid superannuation rate to be deleted: ")    # request a new input
+            elif ArrayValidationAndDeletion(SpecificValueToBeDeleted=superToBeDeleted,      # otherwise check if the number is on file
                                             Array=SuperArray, File=SuperFile) == False:
-                print("ERROR INVALID SUPERANNUATION RATE: NOT ON Array")
-                superToBeDeleted = input("Please input a valid superannuation rate to be deleted:")
+                print("ERROR INVALID SUPERANNUATION RATE: NOT ON Array")    # if it is not print an error
+                superToBeDeleted = input("Please input a valid superannuation rate to be deleted:")     # request a new input
             else:
-                deletionValidation = True
+                deletionValidation = True       # validate the loop
             # end if
         # end while
         while additionValidation == False:
-            if superToBeAdded.isnumeric() == False:
-                if superToBeAdded.loewr() == 'next':
-                    additionValidation = True
+            if superToBeAdded.isnumeric() == False:       # if the inputted data is not a number
+                if superToBeAdded.loewr() == 'next':      # if next is inputted then
+                    additionValidation = True             # validate the loop
                 else:
-                    print("ERROR INVALID SUPERANNUATION RATE: INVALID INTEGER ENTRY")
+                    print("ERROR INVALID SUPERANNUATION RATE: INVALID INTEGER ENTRY")      # if they did not choose next then throw an error
                     superToBeAdded = input("Please input a superannuation rate, using an integer without a"
-                                           " percentage sign: ")
+                                           " percentage sign: ")        # request new data
             elif ArrayValidationAndAddition(SpecificValueToBeAdded=superToBeAdded,
-                                            Array=SuperArray, File=SuperFile) == False:
-                print("ERROR INVALID SUPERANNUATION RATE: INVALID INTEGER ENTRY")
+                                            Array=SuperArray, File=SuperFile) == False:     # check if the deletion was valid
+                print("ERROR INVALID SUPERANNUATION RATE: INVALID INTEGER ENTRY")       # otherwise, throw an error, and request new input
                 superToBeAdded = input("Please input a superannuation rate, using an integer without a"
                                          " percentage sign: ")
             else:
-                additionValidation = True
+                additionValidation = True       # validate the loop.
             # end if
         # end while
-        return True
+        return True         # if action was taken return true
     # end if
-    return False
+    return False        # if no action was taken return false
+# end def
 
 def Display_Financial_HealthInsurance(HealthInsuranceArray, HealthFile):
     HealthInsuranceArray = readCSV2Array(HealthFile)
@@ -1194,27 +1196,27 @@ def Display_Financial_HealthInsurance(HealthInsuranceArray, HealthFile):
     additionValidation = False
     loopCounter = 1
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Health Insurance Adjustment")
-    for HealthPlans in HealthInsuranceArray:
+    for HealthPlans in HealthInsuranceArray:    # print out each health plan in the health plan array
         healthInsuranceprintStringEnd = healthInsuranceprintStringEnd + "[" + str(loopCounter) + "]" + "$" + \
                                         HealthInsuranceArray[loopCounter-1] + ", "
-        loopCounter = loopCounter + 1
+        loopCounter = loopCounter + 1   # increment the loop counter
     # end for
     print("|")
-    print(healthInsuranceprintStringBegin + healthInsuranceprintStringEnd)
+    print(healthInsuranceprintStringBegin + healthInsuranceprintStringEnd)      # print the constructed array
     print("|")
-    print("| Delete Health Insurance Plan: // using options 1, 2, etc. or 'next' to skip")
-    healthInsuranceToBeDeleted = input(":: ")
-    print("|")
-    print("| Add Health Insurance Plan: // using the price or 'next' to skip")
+    print("| Delete Health Insurance Plan: // using options 1, 2, etc. or 'next' to skip")   # using the position of the health plan
+    healthInsuranceToBeDeleted = input(":: ")                                                # the clerk chooses a health plan to be deleted
+    print("|")                                                                               # using the value of the health plan
+    print("| Add Health Insurance Plan: // using the price or 'next' to skip")               # the clerk chooses a health plan to be added.
     healthInsuranceToBeAdded = input(":: ")
     print("|")
     if Footer() == True:
         while deletionValidation == False:
-            if healthInsuranceToBeDeleted.isnumeric() == False:
-                if healthInsuranceToBeDeleted.lower() == 'next':
-                    deletionValidation = True
+            if healthInsuranceToBeDeleted.isnumeric() == False:   # if the inputted delete value is not a number
+                if healthInsuranceToBeDeleted.lower() == 'next':  # check if they have used the next option
+                    deletionValidation = True                     # if they have exit the delete loop
                 else:
-                    print("ERROR INVALID HEALTH CARE PLAN: NOT ON Array")
+                    print("ERROR INVALID HEALTH CARE PLAN: NOT ON Array")      # if they did not choose next then throw an error
                     healthInsuranceToBeDeleted = input("Please input a valid health care plan to be deleted: ")
             elif ArrayValidationAndDeletion(specificValueToBeDeleted=healthInsuranceToBeDeleted,
                                             Array=HealthInsuranceArray, File=HealthFile) == False:
@@ -1235,16 +1237,15 @@ def Display_Financial_HealthInsurance(HealthInsuranceArray, HealthFile):
                 # end if
             elif ArrayValidationAndAddition(specificValueToBeAdded=healthInsuranceToBeAdded,
                                             Array=HealthInsuranceArray, File=HealthFile) == False:
-                print("ERROR: INVALID HEALTH CARE PLAN: INVALID INTEGER ENTRY")
+                print("ERROR: INVALID HEALTH CARE PLAN: INVALID INTEGER ENTRY")         # otherwise, throw an error, and request new input
                 healthInsuranceToBeAdded = input("Please input a valid health care plan, inputting the cost"
-                                                 " (to skip type 'next'): ")
+                                                 " (to skip type 'next'): ")           # request new data
             else:
-                additionValidation = True
+                additionValidation = True        # validate the loop.
             # end if
         # end while
-        return True
-    return False
-    # end if
+        return True         # if action was taken return True
+    return False            # if no action was taken return false
 # end def
 
 def Display_Financial_PayRates(RolePaymentArray, RolePayFile):
@@ -1260,29 +1261,29 @@ def Display_Financial_PayRates(RolePaymentArray, RolePayFile):
     additionValidation = False
     deletionValidation = False
     Header(SystemHeader="Interactive: Clerk", HeaderMessage="Payrates Adjustment")
-    for role in RolePaymentArray:
+    for role in RolePaymentArray:        # print out each role with it's pay rate in the rolepay array
         rolePaymentprintStringEnd = rolePaymentprintStringEnd + "[" + str(loopCounter) + "] " + \
                                     str(RolePaymentArray[loopCounter-1][0]) + " ($" +\
                                     str(RolePaymentArray[loopCounter-1][1]) + " / hour), "
-        loopCounter = loopCounter + 1
-    # Repeat loop condition: Until(loopCounter==loopCalculator)
+        loopCounter = loopCounter + 1   # increment the loop counter
+    # end for
     print("|")
-    print("|" + rolePaymentprintStringBegin + rolePaymentprintStringEnd)
+    print("|" + rolePaymentprintStringBegin + rolePaymentprintStringEnd)      # print the constructed array
     print("|")
-    print("| Delete role: // using options 1, 2, etc. or use 'next' to skip")
-    roleToBeDeleted = input("| :: ")
+    print("| Delete role: // using options 1, 2, etc. or use 'next' to skip")   # using the position of the role
+    roleToBeDeleted = input("| :: ")                                            # the clerk chooses a role to be deleted
     print("|")
-    print("| Add Role: // Enter the name or use 'next' to skip")
-    roleToBeAdded = input("| :: ")
-    print("|")
+    print("| Add Role: // Enter the name or use 'next' to skip")                # using the name of role
+    roleToBeAdded = input("| :: ")                                              # the role is added
+    print("|")                                                                  # which needs a corresponding pay rate.
     print("| Add Payrate: // Enter the payrate to correlate with the new role, if you have skipped "
           "the add role option please do not add a payrate, to skip type 'next'")
     payRateToBeAdded = input("| :: ")
     print("")
     if Footer() == True:
         while arrayValidation == False:
-            if payRateToBeAdded.isnumeric() == False and payRateToBeAdded != 'next':
-                if roleToBeAdded != 'next':
+            if payRateToBeAdded.isnumeric() == False and payRateToBeAdded != 'next':        # if the payrate is not a number and not 'next'
+                if roleToBeAdded != 'next':                                                 # throw an error and request new data
                     print("ERROR: MISMATCH, there is not a corresponding payrate to the role or vice versa.")
                     print("| Add Role: // Enter the name or use 'next' to skip")
                     roleToBeAdded = input("| :: ")
@@ -1290,61 +1291,62 @@ def Display_Financial_PayRates(RolePaymentArray, RolePayFile):
                           "the add role option please do not add a payrate, to skip type 'next'")
                     payRateToBeAdded = input("| :: ")
                 else:
-                    if roleToBeDeleted != 'next':
-                        while deletionValidation == False:
+                    if roleToBeDeleted != 'next':               # if the role to be deleted is not a 'next' option
+                        while deletionValidation == False:      # check if and try delete the role.
                             if ArrayValidationAndDeletion(specificValidToBeDeleted=roleToBeDeleted,
                                                           Array=RolePaymentArray, File=RolePayFile) == False:
-                                print("ERROR INVALID ROLE: NOT ON Array")
-                                roleToBeDeleted = input("Please input a valid role to be deleted: ")
+                                print("ERROR INVALID ROLE: NOT ON Array")       # if the deletion does not work
+                                roleToBeDeleted = input("Please input a valid role to be deleted: ")    # throw an error and request new data
                             else:
-                                print("|")
+                                print("|")          # if the role is successfully added then print out the role.
                                 print("| ROLE: " + str(roleToBeDeleted) + " was deleted")
                                 print("|")
                                 deletionValidation = True
                             # end if
                         # end while
                     else:
-                        print("NO ACTIONS TAKEN")
+                        print("NO ACTIONS TAKEN")       # if next is for everything, print no actions taken and return True
                         return True
                     # end if
                 # end if
-            elif roleToBeAdded.lower() == 'next':
+            elif roleToBeAdded.lower() == 'next':   # if role to be added is skipped
                 while deletionValidation == False:
-                    if roleToBeDeleted.lower() == 'next':
-                        print("NO ACTIONS TAKEN")
+                    if roleToBeDeleted.lower() == 'next':    # check if role to be deleted is true
+                        print("NO ACTIONS TAKEN")    # if next is for everything, print no actions taken and return True
                         return True
                     elif ArrayValidationAndDeletion(specificValidToBeDeleted=roleToBeDeleted,
                                                   Array=RolePaymentArray, File=RolePayFile) == False:
-                        print("ERROR INVALID ROLE: NOT ON Array")
-                        roleToBeDeleted = input("Please input a valid role to be deleted: ")
+                        print("ERROR INVALID ROLE: NOT ON Array")       # if deletion does not worked, throw an error
+                        roleToBeDeleted = input("Please input a valid role to be deleted: ")    # and request new input
                     else:
                         print("|")
-                        print("| ROLE: " + str(roleToBeDeleted) + " was deleted")
-                        print("|")
+                        print("| ROLE: " + str(roleToBeDeleted) + " was deleted")   # if successful deletion, print out
+                        print("|")                                                  # the role deleted
                         deletionValidation = True
                     # end if
                 # end while
             else:
                 while additionValidation == False:
-                    roleToBeAddedArray[0] = roleToBeAdded
-                    roleToBeAddedArray[1] = payRateToBeAdded
+                    roleToBeAddedArray[0] = roleToBeAdded               # adds the role to the output array
+                    roleToBeAddedArray[1] = payRateToBeAdded            # adds the pay rate to the output array
                     if ArrayValidationAndAddition(specificValidToBeAdded=roleToBeAddedArray,
-                                                  Array=RolePaymentArray, File=RolePayFile) == False:
-                        print(" ")
-                        print("PROGRAM ERROR")
+                                                  Array=RolePaymentArray, File=RolePayFile) == False:   # if the role
+                        print(" ")                                                                     # cannot be added
+                        print("PROGRAM ERROR")                                                     # an error is thrown
                         print(" ")
                         time.sleep(2)
                         exit()
                     else:
                         print("|")
                         print("| ROLE: " + str(roleToBeAddedArray[0]) + " was added, paying $" +
-                              str(roleToBeAddedArray[1]) + " an hour")
-                        return True
+                              str(roleToBeAddedArray[1]) + " an hour")   # if it works then the role and pay are printed
+                        return True     # if actions are taken then return True
                     # end if
                 # end while
             # end if
         # end while
-    return False
+    return False        # if no actions are taken then return False
+# end def
 
 def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDetailsFile, EmployeeLoginArray,
                                   EmployeeLoginFile, RolePayArray, RolePayFile, TaxArray, TaxFile, PaymentArray,
@@ -1389,54 +1391,54 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     employeeHealthDeduction = 0
     normalHours = 0
     if FindCurrentEmployee(EmployeeID=EmployeeID, array=EmployeeLoginArray, file=EmployeeLoginFile) == True:
-        specificEmployeeDetailsArray = EmployeeDetailsArray[employeeArrayPosition]
-        specificEmployeeLoginArray = EmployeeLoginArray[employeeArrayPosition]
-        employeeName = str(specificEmployeeLoginArray[1])
+        specificEmployeeDetailsArray = EmployeeDetailsArray[employeeArrayPosition]  # if the employee is found, find the
+        specificEmployeeLoginArray = EmployeeLoginArray[employeeArrayPosition]      # employees details and login array
+        employeeName = str(specificEmployeeLoginArray[1])       # find their first name, last name and role.
         employeeSurname = str(specificEmployeeLoginArray[2])
         employeeRole = str(specificEmployeeDetailsArray[1])
-        descriptiveIntroduction = "Employee: " + employeeName + " "  + employeeSurname + " :: EmployeeID: " + EmployeeID
-        employeeSuperRate = specificEmployeeDetailsArray[2]
-        employeeHealthPlan = specificEmployeeDetailsArray[3]
+        descriptiveIntroduction = "Employee: " + employeeName + " "  + employeeSurname + " :: EmployeeID: " + EmployeeID    # construct an introduction
+        employeeSuperRate = specificEmployeeDetailsArray[2]     # find their superannuation rate
+        employeeHealthPlan = specificEmployeeDetailsArray[3]    # find their health plan
     # end if
-    mondayHours = float(specificEmployeeDetailsArray[8])
+    mondayHours = float(specificEmployeeDetailsArray[8])        # find and convert the days respective hours from their details arrays.
     tuesdayHours = float(specificEmployeeDetailsArray[9])
     wednesdayHours = float(specificEmployeeDetailsArray[10])
     thursdayHours = float(specificEmployeeDetailsArray[11])
     fridayHours = float(specificEmployeeDetailsArray[12])
     saturdayHours = float(specificEmployeeDetailsArray[13])
     sundayHours = float(specificEmployeeDetailsArray[14])
-    if mondayHours > 8:
-        normalHours = normalHours + 8
-    else:
+    if mondayHours > 8:                                 # for each day, if their hours are over 8 hours, set
+        normalHours = 8                                 # the normal hours to 8, otherwise normal hours is the array's
+    else:                                               # hours
         normalHours = normalHours + mondayHours
     # end if
     if tuesdayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + tuesdayHours
     # end if
     if wednesdayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + wednesdayHours
     # end if
     if thursdayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + thursdayHours
     # end if
     if fridayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + fridayHours
     # end if
     if saturdayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + saturdayHours
     # end if
     if sundayHours > 8:
-        normalHours = normalHours + 8
+        normalHours = 8
     else:
         normalHours = normalHours + sundayHours
     # end if
@@ -1445,14 +1447,14 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
             hourlyPay = int(role[1])
         # end if
     # end for
-    hoursWorked = CalculateTotalHours(MondayHours=mondayHours,
+    hoursWorked = CalculateTotalHours(MondayHours=mondayHours,          # calculate the hours worked
                                       TuesdayHours=tuesdayHours,
                                       WednesdayHours=wednesdayHours,
                                       ThursdayHours=thursdayHours,
                                       FridayHours=fridayHours,
                                       SaturdayHours=saturdayHours,
                                       SundayHours=sundayHours)
-    basePay = CalculateBasePay(MondayHours=mondayHours,
+    basePay = CalculateBasePay(MondayHours=mondayHours,                 # calculate their base pay
                                TuesdayHours=tuesdayHours,
                                WednesdayHours=wednesdayHours,
                                ThursdayHours=thursdayHours,
@@ -1461,17 +1463,17 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
                                SundayHours=sundayHours,
                                HourlyRate=hourlyPay)
 
-    publicHolidayOvertimeHours = OvertimeCalculator(DayHours=mondayHours)
-    weekOvertimeHours = WeekOvertimeCalculator(MondayHours=mondayHours,
+    publicHolidayOvertimeHours = OvertimeCalculator(DayHours=mondayHours)       # calculate the overtime hours on the public holidays
+    weekOvertimeHours = WeekOvertimeCalculator(MondayHours=mondayHours,         # find the total week's overtime hours
                                                TuesdayHours=tuesdayHours,
                                                WednesdayHours=wednesdayHours,
                                                ThursdayHours=thursdayHours,
                                                FridayHours=fridayHours,
                                                SaturdayHours=saturdayHours,
                                                SundayHours=sundayHours)
-    saturdayOvertime = OvertimeCalculator(DayHours=saturdayHours)
-    sundayOvertime = OvertimeCalculator(DayHours=sundayHours)
-    overtimePay = CalculateOvertimePay(MondayHours=mondayHours,
+    saturdayOvertime = OvertimeCalculator(DayHours=saturdayHours)           # find the saturday overtime
+    sundayOvertime = OvertimeCalculator(DayHours=sundayHours)               # find the sunday overtime
+    overtimePay = CalculateOvertimePay(MondayHours=mondayHours,             # find the overtime pay
                                        TuesdayHours=tuesdayHours,
                                        WednesdayHours=wednesdayHours,
                                        ThursdayHours=thursdayHours,
@@ -1479,21 +1481,21 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
                                        SaturdayHours=saturdayHours,
                                        SundayHours=sundayHours,
                                        HourlyRate=hourlyPay)
-    publicHolidayPay = CalculatePublicHolidayPay(mondayHours, hourlyPay)
-    grossPay = CalculateTotalPay(BasePay=basePay,
+    publicHolidayPay = CalculatePublicHolidayPay(mondayHours, hourlyPay)    # calculate public holiday pay
+    grossPay = CalculateTotalPay(BasePay=basePay,                           # calculate the gross pay.
                                  OvertimePay=overtimePay,
                                  PublicHolidayHours=mondayHours,
                                  SaturdayHours=saturdayHours,
                                  SundayHours=sundayHours)
-    employeeSuperDeduction = grossPay * (int(employeeSuperRate)/100)
-    tax = CalculateTax(GrossPay=(float(grossPay)-float(employeeSuperDeduction)-float(employeeHealthPlan)),
+    employeeSuperDeduction = grossPay * (int(employeeSuperRate)/100)        # calculate the employee superannuation deduction
+    tax = CalculateTax(GrossPay=(float(grossPay)-float(employeeSuperDeduction)-float(employeeHealthPlan)),  # calculate the employees tax deduction
                        HourlyRate=hourlyPay,
                        TaxRatesArray=TaxArray)
-    netPay = CalculateNetPay(GrossPay=grossPay,
+    netPay = CalculateNetPay(GrossPay=grossPay,         # find the employees net pay
                              Tax=tax,
                              SuperRate=int(specificEmployeeDetailsArray[2]),
                              HealthInsurnace=int(specificEmployeeDetailsArray[3]))
-    clearconsole()
+    clearconsole()  # clear the screen
     Header(SystemHeader="Interactive: Clerk", HeaderMessage=descriptiveIntroduction)
     print("|")
     print("| Employee Given name:" + str(employeeName))
@@ -1524,9 +1526,9 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("|")
     print("| Gross pay: $" + str(grossPay))
     print("| Superannuation deduction: " + str(employeeSuperRate) + "%")
-    if float(netPay) < float(employeeHealthPlan):
-        netPay = netPay + int(employeeHealthPlan) + float(tax)
-        employeeHealthPlan = 0
+    if float(netPay) < float(employeeHealthPlan):       # checks if they pay is less then the healthcare deduction
+        netPay = netPay + int(employeeHealthPlan) + float(tax)      # if it is, then set their netPay back to normal
+        employeeHealthPlan = 0                                      # change the health plan to 0 as they can't pay it
         tax = 0
     # end if
     print("| Health insurance deduction: $" + str(employeeHealthPlan))
@@ -1536,27 +1538,29 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
     print("|")
     print("-----------------------------------------------------------")
     print("")
-    if hourlyPay < 30:
+    if hourlyPay < 30:                  # if hourly pay is below 30 use the lowest tax rate available.
         taxRate = taxRatesArray[0]
-    elif ArrayLengthCalculator(taxRatesArray) > 2 and hourlyPay >= 50:
-        taxRate = taxRatesArray[2]
-    else:
+    elif hourlyPay < 50:
+        taxRate = taxRatesArray[1]      # if hourly pay is between 30 and 49 use the second lowest tax rate available
+    elif ArrayLengthCalculator(taxRatesArray) > 2 and hourlyPay >= 50:  # if the array for taxes if bigger than two
+        taxRate = taxRatesArray[2]                                      # use a higher tax rate
+    else:                                                               # otherwise use the highest preset tax
         taxRate = taxRatesArray[1]
     # end if
-    if employeeHealthPlan == 0:
-        employeeHealthPlan = 'Unpaid'
+    if employeeHealthPlan == 0:         # if the employeeHealthPlan has been set to 0 due to netPay being too low,
+        employeeHealthPlan = 'Unpaid'   # then set the health plan to 'unpaid'
         employeeHealthDeduction = 0
-    elif employeeHealthPlan == 15:
+    elif employeeHealthPlan == 15:     # if the plan is at $15 then set it to 'ancillery'
         employeeHealthPlan = 'Ancillery'
         employeeHealthDeduction = 15
-    elif employeeHealthPlan == 25:
+    elif employeeHealthPlan == 25:      # if the plan is at $25 then set it to 'standard'
         employeeHealthPlan = 'Standard'
         employeeHealthDeduction = 25
-    else:
+    else:                               # if the plan is at $45 then set it to 'superior'
         employeeHealthPlan = 'Superior'
         employeeHealthDeduction = 45
     # end if
-    if TestingUse == False:
+    if TestingUse == False:     # only outputs the array if it isn't being used for testing.
         outputPaymentArray[0] = EmployeeID
         outputPaymentArray[1] = employeeName
         outputPaymentArray[2] = employeeSurname
@@ -1580,23 +1584,12 @@ def Display_EmployeePaymentScreen(EmployeeID, EmployeeDetailsArray, EmployeeDeta
         outputPaymentArray[20] = netPay
         returnSelection = input("Enter anything to return: ")
     else:
-        clearconsole()
+        clearconsole()  # if it is being used for testing, then clear the screen.
     # end if
-    PaymentArray.append(outputPaymentArray)
-    TwoDimensionalArrayToFile(array=PaymentArray, file=PaymentFile)
+    PaymentArray.append(outputPaymentArray)     # add the updated pay array to the payment array.
+    TwoDimensionalArrayToFile(array=PaymentArray, file=PaymentFile)     # add the TwoDimensionalArray to the file
     return False
 # end def
-
-# def Display_TestMode(FileToBeRead):
-#     DataArray = []
-#     ##ReadIn FileToBeRead to DataArray
-#     SortData(DataArray)
-#     StoreData(DataArray)
-#     CalculateAndPrint(DataArray)
-#     print("|")
-#     print("| Thankyou for using the test mode.")
-#     print("|")
-
 
 # ======================================================================================================================
 # File Setup
